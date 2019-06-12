@@ -12,7 +12,7 @@ class Kubebuilder < Formula
   def install
     ENV["GO111MODULE"] = "on"
     ENV["GOPATH"] = buildpath
-    dir = buildpath/"src/github.com/kubernetes-sigs/kubebuilder"
+    dir = buildpath/"src/sigs.k8s.io/kubebuilder"
     dir.install buildpath.children - [buildpath/".brew_home"]
 
     cd dir do
