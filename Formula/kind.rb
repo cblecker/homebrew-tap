@@ -1,9 +1,8 @@
 class Kind < Formula
   desc "Run local Kubernetes cluster in Docker"
   homepage "https://kind.sigs.k8s.io/"
-  url "https://github.com/kubernetes-sigs/kind.git",
-      :tag      => "v0.4.0",
-      :revision => "08872cfc811c76a7cfcf11338fbf6f157477c1cf"
+  url "https://github.com/kubernetes-sigs/kind/archive/v0.4.0.tar.gz"
+  sha256 "efbe0ae6e3d15b5ec3b9b8f9581e18ace50095d04afbf0e59549bc15a93c0781"
   head "https://github.com/kubernetes-sigs/kind.git"
 
   depends_on "go" => :build
