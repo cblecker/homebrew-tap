@@ -6,8 +6,8 @@ class Kubebuilder < Formula
       :revision => "a2db52f1f6fab178cb7f0ea51294faca6dfd9509"
   head "https://github.com/kubernetes-sigs/kubebuilder.git"
 
-  depends_on "go" => :build
   depends_on "git-lfs" => :build
+  depends_on "go" => :build
 
   def install
     ENV["GO111MODULE"] = "on"
