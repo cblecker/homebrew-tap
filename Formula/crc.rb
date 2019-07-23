@@ -2,8 +2,8 @@ class Crc < Formula
   desc "Minimal OpenShift 4 cluster on your local machine"
   homepage "https://www.openshift.com/"
   url "https://github.com/code-ready/crc.git",
-      :tag      => "0.88.0",
-      :revision => "783056ae12595f0a883d99a55753101f139ba9a9"
+      :tag      => "0.89.0",
+      :revision => "6a3e401528bb982ddf1f3a5d26995b3d792f706b"
   head "https://github.com/code-ready/crc.git"
 
   depends_on "go" => :build
