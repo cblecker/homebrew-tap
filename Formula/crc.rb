@@ -15,9 +15,11 @@ class Crc < Formula
     dir.install buildpath.children - [buildpath/".brew_home"]
 
     cd dir do
-      system "make", "out/darwin-amd64/crc", "CRC_VERSION=#{version}"
+      os = `go env GOOS`.strip
+      arch = `go env GOARCH`.strip
+      system "make", "out/#{os}-#{arch}/crc", "CRC_VERSION=#{version}"
 
-      bin.install "out/darwin-amd64/crc"
+      bin.install "out/#{os}-#{arch}/crc"
     end
   end
 
