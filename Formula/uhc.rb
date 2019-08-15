@@ -2,8 +2,8 @@ class Uhc < Formula
   desc "Unified Hybrid Cloud provisioning tool"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift-online/uhc-cli.git",
-      :tag      => "v0.1.18",
-      :revision => "03cc396eb52fd2e0b224ca56e1f6995e5202a775"
+      :tag      => "v0.1.19",
+      :revision => "a53cd6cfc875f27944444d8a35e6dabc26bffdc9"
   head "https://github.com/openshift-online/uhc-cli.git"
 
   depends_on "go" => :build
