@@ -2,8 +2,8 @@ class Kubebuilder < Formula
   desc "SDK for building Kubernetes APIs using CRDs"
   homepage "https://github.com/kubernetes-sigs/kubebuilder"
   url "https://github.com/kubernetes-sigs/kubebuilder.git",
-      :tag      => "v2.0.0-beta.0",
-      :revision => "b12371ccabd1bc8de7ec7ec1a1ca7bfabe567701"
+      :tag      => "v2.0.0",
+      :revision => "b31cc5d96dbc91749eb49c2cf600bd951a46d4bd"
   head "https://github.com/kubernetes-sigs/kubebuilder.git"
 
   depends_on "git-lfs" => :build
@@ -25,12 +25,6 @@ class Kubebuilder < Formula
 
   test do
     ENV["GO111MODULE"] = "on"
-    ENV["GOPATH"] = testpath
-    dir = testpath/"src/github.com/example/test-repo"
-    dir.mkpath
-
-    cd dir do
-      system "#{bin}/kubebuilder", "init", "--domain=example.com", "--license=apache2", "--owner='The Example authors'", "--fetch-deps=false"
-    end
+    system "#{bin}/kubebuilder", "init", "--domain=example.com", "--license=apache2", "--owner='The Example authors'", "--fetch-deps=false"
   end
 end
