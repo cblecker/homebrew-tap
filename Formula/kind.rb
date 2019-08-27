@@ -1,17 +1,15 @@
 class Kind < Formula
   desc "Run local Kubernetes cluster in Docker"
   homepage "https://kind.sigs.k8s.io/"
-  url "https://github.com/kubernetes-sigs/kind/archive/v0.4.0.tar.gz"
-  sha256 "efbe0ae6e3d15b5ec3b9b8f9581e18ace50095d04afbf0e59549bc15a93c0781"
+  url "https://github.com/kubernetes-sigs/kind/archive/v0.5.1.tar.gz"
+  sha256 "fa137ac15eda93776a74ce23a235f5f7bcab995786abba25f4be47c161125206"
   head "https://github.com/kubernetes-sigs/kind.git"
 
   depends_on "go" => :build
 
   def install
     ENV["GO111MODULE"] = "on"
-
     system "go", "build", "-o", bin/"kind"
-
     prefix.install_metafiles
 
     # Install bash completion
