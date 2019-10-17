@@ -20,6 +20,6 @@ class Crc < Formula
   end
 
   test do
-    assert_match /^version: #{version}-.{5}+/, shell_output("#{bin}/crc version")
+    assert_match /^crc version: #{version}/, shell_output("#{bin}/crc version")
   end
 end
