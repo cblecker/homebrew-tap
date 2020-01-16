@@ -2,16 +2,13 @@ class Ocm < Formula
   desc "CLI for the Red Hat OpenShift Cluster Manager"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift-online/ocm-cli.git",
-      :tag      => "v0.1.32",
-      :revision => "e72abb7e3be30eea8f14b0532fe00df8b5fca3bd"
+      :tag      => "v0.1.34",
+      :revision => "02fb98dbd1dc87f1118da0166965561796b883c8"
   head "https://github.com/openshift-online/ocm-cli.git"
 
   depends_on "go" => :build
 
   def install
-    ENV["GO111MODULE"] = "on"
-    ENV["CGO_ENABLED"] = "0"
-
     # Build binary
     system "go", "build", "-o", "#{bin}/ocm", "./cmd/ocm"
 
