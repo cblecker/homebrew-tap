@@ -2,10 +2,10 @@ class OpenshiftCli < Formula
   desc "OpenShift command-line interface tools"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/oc.git",
-      # :tag => "v4.4.6",
-      :revision => "4a4cd759b616cdba344dd73386727c10d3d2dde1",
+      # :tag => "v4.4.11", # oc adm release info 4.4.11 --commits
+      :revision => "d89e458c3dff553f9a732b282830bfa9b4e0ab9b",
       :shallow  => false
-  version "4.4.6"
+  version "4.4.11"
   head "https://github.com/openshift/oc.git",
       :shallow  => false
 
