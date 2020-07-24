@@ -19,22 +19,30 @@ class OpenshiftCli < Formula
     prefix.install_metafiles
 
     # Install bash completion
-    output = Utils.popen_read("#{bin}/oc completion bash")
+    output = Utils.safe_popen_read("#{bin}/oc completion bash")
     (bash_completion/"oc").write output
 
     # Install zsh completion
-    output = Utils.popen_read("#{bin}/oc completion zsh")
+    output = Utils.safe_popen_read("#{bin}/oc completion zsh")
     (zsh_completion/"_oc").write output
   end
 
   test do
+    # Grab version details
+    version_raw = shell_output("#{bin}/oc version --client --output=json")
+    version_json = JSON.parse(version_raw)
+
+    # Ensure that we had a clean build tree
+    assert_equal "clean", version_json["clientVersion"]["gitTreeState"]
+
     if build.stable?
-      # If stable, ensure version matches
-      version_output = shell_output("#{bin}/oc version --client 2>&1")
-      # assert_match "Client Version: v#{version}", version_output
-      assert_match stable.instance_variable_get(:@resource)
-                         .instance_variable_get(:@specs)[:revision].slice(0, 7),
-                   version_output
+      # Verify the tagged version matches the version we expect
+      # assert_match version_json["clientVersion"]["gitVersion"], "v#{version}"
+
+      # Verify we built based on the commit we checked out
+      assert_equal stable.instance_variable_get(:@resource)
+                         .instance_variable_get(:@specs)[:revision].slice(0, 9),
+                         version_json["clientVersion"]["gitCommit"]
     end
 
     # Test that release information matching the version is available
