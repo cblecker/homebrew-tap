@@ -13,7 +13,7 @@ class OpenshiftCli < Formula
   depends_on "heimdal" => :build
 
   def install
-    system "make"
+    system "make", "oc"
 
     bin.install "oc"
     prefix.install_metafiles
