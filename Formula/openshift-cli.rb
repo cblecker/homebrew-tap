@@ -2,28 +2,28 @@ class OpenshiftCli < Formula
   desc "OpenShift command-line interface tools"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/oc.git",
-      # :tag => "v4.5.11", # oc adm release info 4.5.11 --commits
-      :revision => "d7f3ccf9a5bdc96ba92e31526cf014b3de4c46aa",
-      :shallow  => false
-  version "4.5.11"
+      # tag: => "v4.5.16", # oc adm release info 4.5.16 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
+      revision: "3f6a83fb70bfe5c6ef0e0886923c90015a4256bc",
+      shallow:  false
+  version "4.5.16"
   head "https://github.com/openshift/oc.git",
-      :shallow  => false
+       shallow: false
 
   depends_on "go" => :build
   depends_on "heimdal" => :build
 
   def install
-    system "make", "oc"
+    ENV["SOURCE_GIT_TAG"] = "v#{version}" if build.stable?
 
+    system "make", "oc"
     bin.install "oc"
-    prefix.install_metafiles
 
     # Install bash completion
-    output = Utils.safe_popen_read("#{bin}/oc completion bash")
+    output = Utils.safe_popen_read("#{bin}/oc", "completion", "bash")
     (bash_completion/"oc").write output
 
     # Install zsh completion
-    output = Utils.safe_popen_read("#{bin}/oc completion zsh")
+    output = Utils.safe_popen_read("#{bin}/oc", "completion", "zsh")
     (zsh_completion/"_oc").write output
   end
 
@@ -37,15 +37,21 @@ class OpenshiftCli < Formula
 
     if build.stable?
       # Verify the tagged version matches the version we expect
-      # assert_match version_json["clientVersion"]["gitVersion"], "v#{version}"
+      assert_match version_json["clientVersion"]["gitVersion"], "v#{version}"
 
       # Verify we built based on the commit we checked out
       assert_equal stable.instance_variable_get(:@resource)
                          .instance_variable_get(:@specs)[:revision].slice(0, 9),
-                         version_json["clientVersion"]["gitCommit"]
+                   version_json["clientVersion"]["gitCommit"]
     end
 
     # Test that release information matching the version is available
     system "#{bin}/oc", "adm", "release", "info", version.to_s
+
+    # Test that we can generate and write a kubeconfig
+    (testpath/"kubeconfig").write ""
+    system "KUBECONFIG=#{testpath}/kubeconfig #{bin}/oc config set-context foo 2>&1"
+    context_output = shell_output("KUBECONFIG=#{testpath}/kubeconfig #{bin}/oc config get-contexts -o name")
+    assert_match "foo", context_output
   end
 end
