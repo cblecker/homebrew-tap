@@ -2,10 +2,10 @@ class OpenshiftCli < Formula
   desc "OpenShift command-line interface tools"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/oc.git",
-      # tag: => "v4.6.1", # oc adm release info 4.5.16 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
-      revision: "074039a0a9c137967fba3e667b9849d60e5054d8",
+      # tag: => "v4.6.8", # oc adm release info 4.6.8 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
+      revision: "299b6af535d19b70c661eb42ed4d30aa3325fc90",
       shallow:  false
-  version "4.6.1"
+  version "4.6.8"
   head "https://github.com/openshift/oc.git",
        shallow: false
 
