@@ -5,7 +5,7 @@ class OpenshiftCli < Formula
       # tag: => "v4.6.15", # oc adm release info 4.6.15 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
       revision: "5797eaecac19b9c0e4d10d3d6b559c074e3c3c88",
       shallow:  false
-  version "4.6.8"
+  version "4.6.15"
   head "https://github.com/openshift/oc.git",
        shallow: false
 
