@@ -2,10 +2,10 @@ class OpenshiftCli < Formula
   desc "OpenShift command-line interface tools"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/oc.git",
-      # tag: => "v4.7.7", # oc adm release info 4.7.7 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
-      revision: "2513fdbb36e2ddf13bc0b17460151c03eb3a3547",
-      shallow:  false
-  version "4.7.7"
+      shallow:  false,
+      # tag: => "v4.7.9", # oc adm release info 4.7.9 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
+      revision: "95881afb5df065c250d98cf7f30ee4bb6d281acf"
+  version "4.7.9"
   head "https://github.com/openshift/oc.git",
        shallow: false
 
@@ -28,7 +28,7 @@ class OpenshiftCli < Formula
   end
 
   test do
-    # Grab version details
+    # Grab version details from built client
     version_raw = shell_output("#{bin}/oc version --client --output=json")
     version_json = JSON.parse(version_raw)
 
@@ -36,17 +36,21 @@ class OpenshiftCli < Formula
     assert_equal "clean", version_json["clientVersion"]["gitTreeState"]
 
     if build.stable?
-      # Verify the tagged version matches the version we expect
+      # Verify the built artifact matches the formula
       assert_match version_json["clientVersion"]["gitVersion"], "v#{version}"
+      assert_equal version_json["clientVersion"]["gitCommit"],
+                   stable.instance_variable_get(:@resource).instance_variable_get(:@specs)[:revision].slice(0, 9),
+      # Get remote release details
+      release_raw = shell_output("#{bin}/oc adm release info #{version} --output=json")
+      release_json = JSON.parse(release_raw)
 
-      # Verify we built based on the commit we checked out
-      assert_equal stable.instance_variable_get(:@resource)
-                         .instance_variable_get(:@specs)[:revision].slice(0, 9),
-                   version_json["clientVersion"]["gitCommit"]
+      # Verify the formula matches the release data for the version
+      assert_match release_json["references"]["spec"]["tags"].find { |tag|
+                     tag["name"]=="cli"
+                   } ["annotations"]["io.openshift.build.commit.id"],
+                   stable.instance_variable_get(:@resource).instance_variable_get(:@specs)[:revision]
+
     end
-
-    # Test that release information matching the version is available
-    system "#{bin}/oc", "adm", "release", "info", version.to_s
 
     # Test that we can generate and write a kubeconfig
     (testpath/"kubeconfig").write ""
