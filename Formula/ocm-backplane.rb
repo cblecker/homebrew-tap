@@ -11,6 +11,7 @@ class OcmBackplane < Formula
   def install
     # Build binary
     system "go", "build", "-o", "#{bin}/ocm-backplane"
+    bin.install Dir["scripts/*"]
   end
 
   test do
