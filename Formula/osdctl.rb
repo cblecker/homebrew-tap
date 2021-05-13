@@ -1,29 +1,36 @@
 class Osdctl < Formula
   desc "SRE toolbox utility for OpenShift Dedicated"
   homepage "https://www.openshift.com/"
-  url "https://github.com/openshift/osd-utils-cli.git",
-      :tag      => "v0.4.0",
-      :revision => "19c32866af84ea16e7f518a7f2b81cfd9ce14959"
-  head "https://github.com/openshift/osd-utils-cli.git"
+  url "https://github.com/openshift/osdctl.git",
+      tag:      "v0.4.2",
+      revision: "639bd1d3e0d47f37d9e53fba18ee56049545c2a5"
+  head "https://github.com/openshift/osdctl.git"
 
   depends_on "go" => :build
+  depends_on "goreleaser" => :build
 
   def install
-    ENV["GOOS"] = "darwin"
-    ENV["GOARCH"] = "amd64"
+    # Don't dirty the git tree
+    rm_rf ".brew_home"
 
-    # Build binary
+    # Build binary using goreleaser
     system "make", "build"
 
-    bin.install "bin/osdctl"
+    # Select version to install from build
+    os = "darwin"
+    on_linux do
+      os = "linux"
+    end
+
+    bin.install "dist/osdctl_#{os}_amd64/osdctl"
     prefix.install_metafiles
 
     # Install bash completion
-    output = Utils.safe_popen_read("#{bin}/osdctl completion bash")
+    output = Utils.safe_popen_read("#{bin}/osdctl", "completion", "bash")
     (bash_completion/"osdctl").write output
 
     # Install zsh completion
-    output = Utils.safe_popen_read("#{bin}/osdctl completion zsh")
+    output = Utils.safe_popen_read("#{bin}/osdctl", "completion", "zsh")
     (zsh_completion/"_osdctl").write output
   end
 
