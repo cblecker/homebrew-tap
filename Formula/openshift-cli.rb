@@ -3,9 +3,9 @@ class OpenshiftCli < Formula
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/oc.git",
       shallow:  false,
-      # tag: => "v4.7.9", # oc adm release info 4.7.9 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
+      # tag: => "v4.7.13", # oc adm release info 4.7.13 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
       revision: "95881afb5df065c250d98cf7f30ee4bb6d281acf"
-  version "4.7.9"
+  version "4.7.13"
   head "https://github.com/openshift/oc.git",
        shallow: false
 
@@ -13,7 +13,7 @@ class OpenshiftCli < Formula
   depends_on "heimdal" => :build
 
   def install
-    ENV["SOURCE_GIT_TAG"] = "v#{version}" if build.stable?
+    ENV["SOURCE_GIT_TAG"] = "#{version}" if build.stable?
 
     system "make", "oc"
     bin.install "oc"
