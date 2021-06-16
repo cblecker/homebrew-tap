@@ -9,8 +9,10 @@ class OcmBackplane < Formula
   depends_on "go" => :build
 
   def install
+    ENV["GOPRIVATE"] = "gitlab.cee.redhat.com"
+
     # Build binary
-    system "go", "build", "-o", "#{bin}/ocm-backplane"
+    system "go", "build", "-o", "#{bin}/ocm-backplane", "./cmd/ocm-backplane"
   end
 
   test do
