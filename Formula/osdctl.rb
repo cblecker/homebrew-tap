@@ -14,7 +14,7 @@ class Osdctl < Formula
     rm_rf ".brew_home"
 
     # Build binary using goreleaser
-    system "make", "build"
+    system "goreleaser", "build", "--rm-dist"
 
     # Select version to install from build
     os = "darwin"
