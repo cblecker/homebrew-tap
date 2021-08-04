@@ -2,8 +2,8 @@ class Ocm < Formula
   desc "CLI for the Red Hat OpenShift Cluster Manager"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift-online/ocm-cli.git",
-      :tag      => "v0.1.54",
-      :revision => "f5f681e4872e3af96328f373ebf48edbe1c6ae18"
+      :tag      => "v0.1.55",
+      :revision => "871dc3793d87cb8f3952eeb7e823eb5c3cb1a86c"
   head "https://github.com/openshift-online/ocm-cli.git"
 
   depends_on "go" => :build
