@@ -7,8 +7,12 @@ class Ocm < Formula
   head "https://github.com/openshift-online/ocm-cli.git"
 
   depends_on "go" => :build
+  depends_on "go-bindata" => :build
 
   def install
+    # Generate bindata
+    system "go", "generate", "-x", "./cmd/...", "./pkg/..."
+
     # Build binary
     system "go", "build", "-o", "#{bin}/ocm", "./cmd/ocm"
 
