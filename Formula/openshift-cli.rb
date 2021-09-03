@@ -9,7 +9,12 @@ class OpenshiftCli < Formula
   head "https://github.com/openshift/oc.git",
        shallow: false
 
-  depends_on "go" => :build
+  # The current stable version doesn't build on go1.17. Once we move to 4.9, this can be removed.
+  if build.head?
+    depends_on "go" => :build
+  else
+    depends_on "go@1.16" => :build
+  end
   depends_on "heimdal" => :build
 
   def install
