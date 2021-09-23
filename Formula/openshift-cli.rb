@@ -3,9 +3,9 @@ class OpenshiftCli < Formula
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/oc.git",
       shallow:  false,
-      # tag: => "v4.8.10", # oc adm release info 4.8.10 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
-      revision: "0d10c3f72592addce965b9bb34992eb6fc283a3b"
-  version "4.8.10"
+      # tag: => "v4.8.13", # oc adm release info 4.8.13 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
+      revision: "88e7eba36ac7cc026d064bb6e4a988acc18a144e"
+  version "4.8.13"
   head "https://github.com/openshift/oc.git",
        shallow: false
 
