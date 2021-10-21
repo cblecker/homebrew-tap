@@ -3,18 +3,13 @@ class OpenshiftCli < Formula
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/oc.git",
       shallow:  false,
-      # tag: => "v4.8.13", # oc adm release info 4.8.13 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
-      revision: "88e7eba36ac7cc026d064bb6e4a988acc18a144e"
-  version "4.8.13"
+      # tag: => "v4.9.0", # oc adm release info 4.9.0 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
+      revision: "96e95cef877ba04872b88e4e2597eabb0174d182"
+  version "4.9.0"
   head "https://github.com/openshift/oc.git",
        shallow: false
 
-  # The current stable version doesn't build on go1.17. Once we move to 4.9, this can be removed.
-  if build.head?
-    depends_on "go" => :build
-  else
-    depends_on "go@1.16" => :build
-  end
+  depends_on "go" => :build
   depends_on "heimdal" => :build
 
   def install
