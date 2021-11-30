@@ -3,8 +3,9 @@ class OcmBackplane < Formula
   homepage "https://www.openshift.com/"
   url "https://gitlab.cee.redhat.com/service/backplane-cli.git",
       :tag      => "0.0.15",
-      :revision => "1d33b24eeca7d0bf6064233f45d1bc993a6d8f3a"
+      :revision => "93c5470697219d319bd45c70fa16ea2b8a0d6a2a"
   head "https://gitlab.cee.redhat.com/service/backplane-cli.git"
+  revision 1
 
   depends_on "go" => :build
 
