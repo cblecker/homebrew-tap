@@ -18,9 +18,7 @@ class Osdctl < Formula
 
     # Select version to install from build
     os = "darwin"
-    on_linux do
-      os = "linux"
-    end
+    os = "linux" if OS.linux?
 
     bin.install "dist/osdctl_#{os}_amd64/osdctl"
     prefix.install_metafiles

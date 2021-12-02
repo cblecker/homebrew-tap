@@ -1,5 +1,5 @@
 class KubectlDevTool < Formula
-  desc "kubectl/oc plugin with various tools useful for the OpenShift developers"
+  desc "Kubectl/oc plugin with various tools useful for the OpenShift developers"
   homepage "https://www.openshift.com/"
   head "https://github.com/openshift/cluster-debug-tools.git"
 

@@ -2,10 +2,10 @@ class OcmBackplane < Formula
   desc "CLI for interacting with the IMS Backplane"
   homepage "https://www.openshift.com/"
   url "https://gitlab.cee.redhat.com/service/backplane-cli.git",
-      :tag      => "0.0.15",
-      :revision => "93c5470697219d319bd45c70fa16ea2b8a0d6a2a"
-  head "https://gitlab.cee.redhat.com/service/backplane-cli.git"
+      tag:      "0.0.15",
+      revision: "93c5470697219d319bd45c70fa16ea2b8a0d6a2a"
   revision 1
+  head "https://gitlab.cee.redhat.com/service/backplane-cli.git"
 
   depends_on "go" => :build
 
@@ -17,6 +17,6 @@ class OcmBackplane < Formula
   end
 
   test do
-    assert_match /^#{version}/, shell_output("#{bin}/ocm-backplane version")
+    assert_match(/^#{version}/, shell_output("#{bin}/ocm-backplane version"))
   end
 end

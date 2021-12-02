@@ -13,7 +13,7 @@ class OpenshiftCli < Formula
   depends_on "heimdal" => :build
 
   def install
-    ENV["SOURCE_GIT_TAG"] = "#{version}" if build.stable?
+    ENV["SOURCE_GIT_TAG"] = version.to_s if build.stable?
 
     system "make", "oc"
     bin.install "oc"
