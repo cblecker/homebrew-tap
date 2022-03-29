@@ -2,8 +2,8 @@ class Osdctl < Formula
   desc "SRE toolbox utility for OpenShift Dedicated"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/osdctl.git",
-      tag:      "v0.9.4",
-      revision: "30190376de5dce6cda31366e0ba15bda3782f2f9"
+      tag:      "v0.9.5",
+      revision: "f97ffe3cc99189e2ca073e47fcd3a454113f3ae9"
   head "https://github.com/openshift/osdctl.git"
 
   depends_on "go" => :build
@@ -17,10 +17,10 @@ class Osdctl < Formula
     system "goreleaser", "build", "--rm-dist"
 
     # Select version to install from build
-    os = "darwin"
-    os = "linux" if OS.linux?
+    OS.linux? ? os = "linux" : os = "darwin"
+    Hardware::CPU.arm? ? arch = "arm64" : arch = "amd64"
 
-    bin.install "dist/osdctl_#{os}_amd64/osdctl"
+    bin.install "dist/osdctl_#{os}_#{arch}/osdctl"
     prefix.install_metafiles
 
     # Install bash completion
