@@ -2,8 +2,8 @@ class Rosa < Formula
   desc "CLI for the Red Hat OpenShift Service on AWS"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/rosa.git",
-      tag:      "v1.1.12",
-      revision: "346dc5eeeaa87384e4ac4bf572baaf30feeba673"
+      tag:      "v1.2.0",
+      revision: "3ebecaf7b265d30ea8b410c01b0bae955a9b9446"
   head "https://github.com/openshift/rosa.git"
 
   depends_on "go" => :build
