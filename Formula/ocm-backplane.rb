@@ -6,6 +6,11 @@ class OcmBackplane < Formula
       revision: "ed0ac73f1ed37b8600d9eb30db71282b71e594d8"
   head "https://gitlab.cee.redhat.com/service/backplane-cli.git"
 
+  livecheck do
+    url :stable
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
+
   depends_on "go" => :build
 
   def install
