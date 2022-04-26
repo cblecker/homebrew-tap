@@ -9,6 +9,11 @@ class OpenshiftCli < Formula
   head "https://github.com/openshift/oc.git",
        shallow: false
 
+  livecheck do
+    url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/"
+    regex(/href=.*?openshift-client-mac-(\d+(?:\.\d+)+)\.tar\.gz/i)
+  end
+
   depends_on "go" => :build
   depends_on "heimdal" => :build
 
