@@ -19,5 +19,6 @@ class Rosa < Formula
 
   test do
     assert_match(/^#{version}/, shell_output("#{bin}/rosa version"))
+    assert_match(/INFO: Successfully downloaded/, shell_output("#{bin}/rosa download oc"))
   end
 end
