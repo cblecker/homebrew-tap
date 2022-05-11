@@ -9,12 +9,22 @@ class Rosa < Formula
   depends_on "go" => :build
 
   def install
+    binary_name = "rosa"
+
     # Build binary
-    system "go", "build", "-o", "#{bin}/rosa", "./cmd/rosa"
+    system "go", "build", "-o", "#{bin}/#{binary_name}", "./cmd/#{binary_name}"
 
     # Install bash completion
-    output = Utils.safe_popen_read("#{bin}/rosa", "completion")
-    (bash_completion/"rosa").write output
+    bash_output = Utils.safe_popen_read("#{bin}/#{binary_name}", "completion", "bash")
+    (bash_completion/"#{binary_name}").write bash_output
+
+    # Install zsh completion
+    zsh_output = Utils.safe_popen_read("#{bin}/#{binary_name}", "completion", "zsh")
+    (zsh_completion/"_#{binary_name}").write zsh_output
+
+    # Install fish completion
+    fish_output = Utils.safe_popen_read("#{bin}/#{binary_name}", "completion", "zsh")
+    (fish_completion/"#{binary_name}.fish").write fish_output
   end
 
   test do
