@@ -1,4 +1,5 @@
 {
   "crc": "homebrew/core",
-  "kind": "homebrew/core"
+  "kind": "homebrew/core",
+  "rosa": "homebrew/core/rosa-cli"
 }
