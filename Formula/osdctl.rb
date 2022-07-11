@@ -17,8 +17,8 @@ class Osdctl < Formula
     system "goreleaser", "build", "--rm-dist"
 
     # Select version to install from build
-    OS.linux? ? os = "linux" : os = "darwin"
-    Hardware::CPU.arm? ? arch = "arm64" : arch = "amd64"
+    os = OS.linux? ? "linux" : "darwin"
+    arch = Hardware::CPU.arm? ? "arm64" : "amd64"
 
     bin.install "dist/osdctl_#{os}_#{arch}/osdctl"
     prefix.install_metafiles
@@ -33,11 +33,17 @@ class Osdctl < Formula
   end
 
   test do
+    # Grab version details from built client
+    version_raw = shell_output("#{bin}/osdctl version")
+    version_json = JSON.parse(version_raw)
+
+    assert_equal version_json["commit"],
+                 stable.instance_variable_get(:@resource).instance_variable_get(:@specs)[:revision].slice(0, 7)
+
     if build.stable?
-      # Verify we built based on the commit we checked out
-      assert_match stable.instance_variable_get(:@resource)
-                         .instance_variable_get(:@specs)[:revision].slice(0, 7),
-                         shell_output("#{bin}/osdctl --version")
+      # Verify the built artifact matches the formula
+      assert_match version_json["version"], version.to_s
+
     end
   end
 end
