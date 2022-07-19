@@ -5,6 +5,7 @@ class Osdctl < Formula
       tag:      "v0.9.6",
       revision: "ed23ebad95488c347ab951d3f6f33a47ea466c26"
   head "https://github.com/openshift/osdctl.git"
+  revision 1
 
   depends_on "go" => :build
   depends_on "goreleaser" => :build
@@ -18,7 +19,7 @@ class Osdctl < Formula
 
     # Select version to install from build
     os = OS.linux? ? "linux" : "darwin"
-    arch = Hardware::CPU.arm? ? "arm64" : "amd64"
+    arch = Hardware::CPU.arm? ? "arm64" : "x86_64"
 
     bin.install "dist/osdctl_#{os}_#{arch}/osdctl"
     prefix.install_metafiles
