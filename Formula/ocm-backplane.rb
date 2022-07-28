@@ -2,8 +2,8 @@ class OcmBackplane < Formula
   desc "CLI for interacting with the IMS Backplane"
   homepage "https://www.openshift.com/"
   url "https://gitlab.cee.redhat.com/service/backplane-cli.git",
-      tag:      "0.0.25",
-      revision: "39a78bde1e0d96a7db67133cf25ae9e4aa6342bf"
+      tag:      "0.0.26",
+      revision: "6d18bbe92d4502a748c778e2c24a762aadb2db23"
   head "https://gitlab.cee.redhat.com/service/backplane-cli.git"
 
   livecheck do
