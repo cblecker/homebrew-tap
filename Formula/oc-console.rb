@@ -2,8 +2,8 @@ class OcConsole < Formula
   desc "oc plugin to open the OpenShift 4 console in your web browser"
   homepage "https://github.com/cblecker/oc-console/"
   url "https://github.com/cblecker/oc-console.git",
-      tag:      "v1.1.2",
-      revision: "8ce67772bcbba43658ffabe3da7d71a46bdf26b7"
+      tag:      "v1.2.0",
+      revision: "efeb17c800bc285a6825560fc72c38ab53ccd3c5"
   head "https://github.com/cblecker/oc-console.git"
 
   depends_on "go" => :build
