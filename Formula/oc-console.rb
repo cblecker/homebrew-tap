@@ -5,9 +5,11 @@ class OcConsole < Formula
       tag:      "v1.2.0",
       revision: "efeb17c800bc285a6825560fc72c38ab53ccd3c5"
   head "https://github.com/cblecker/oc-console.git"
+  revision 1
 
   depends_on "go" => :build
   depends_on "goreleaser" => :build
+  depends_on "upx" => :build
 
   def install
     # Don't dirty the git tree
