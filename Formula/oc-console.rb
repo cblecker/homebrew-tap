@@ -5,7 +5,7 @@ class OcConsole < Formula
       tag:      "v1.2.0",
       revision: "efeb17c800bc285a6825560fc72c38ab53ccd3c5"
   head "https://github.com/cblecker/oc-console.git"
-  revision 2
+  revision 3
 
   depends_on "go" => :build
   depends_on "goreleaser" => :build
@@ -22,7 +22,7 @@ class OcConsole < Formula
     os = OS.linux? ? "linux" : "darwin"
     arch = Hardware::CPU.arm? ? "arm64" : "amd64_v1"
 
-    bin.install "dist/oc-console_#{os}_#{arch}/oc-console"
+    bin.install "dist/oc-console-main_#{os}_#{arch}/oc-console"
     prefix.install_metafiles
   end
 end
