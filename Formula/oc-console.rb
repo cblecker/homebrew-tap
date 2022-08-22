@@ -5,7 +5,7 @@ class OcConsole < Formula
       tag:      "v1.2.0",
       revision: "efeb17c800bc285a6825560fc72c38ab53ccd3c5"
   head "https://github.com/cblecker/oc-console.git"
-  revision 1
+  revision 2
 
   depends_on "go" => :build
   depends_on "goreleaser" => :build
@@ -19,8 +19,8 @@ class OcConsole < Formula
     system "goreleaser", "build", "--rm-dist"
 
     # Select version to install from build
-    OS.linux? ? os = "linux" : os = "darwin"
-    Hardware::CPU.arm? ? arch = "arm64" : arch = "amd64"
+    os = OS.linux? ? "linux" : "darwin"
+    arch = Hardware::CPU.arm? ? "arm64" : "amd64_v1"
 
     bin.install "dist/oc-console_#{os}_#{arch}/oc-console"
     prefix.install_metafiles
