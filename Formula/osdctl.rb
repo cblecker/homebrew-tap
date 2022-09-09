@@ -22,14 +22,7 @@ class Osdctl < Formula
 
     bin.install "dist/osdctl_#{os}_#{arch}/osdctl"
     prefix.install_metafiles
-
-    # Install bash completion
-    output = Utils.safe_popen_read("#{bin}/osdctl", "completion", "bash")
-    (bash_completion/"osdctl").write output
-
-    # Install zsh completion
-    output = Utils.safe_popen_read("#{bin}/osdctl", "completion", "zsh")
-    (zsh_completion/"_osdctl").write output
+    generate_completions_from_executable(bin/"osdctl", "completion", base_name: "osdctl")
   end
 
   test do

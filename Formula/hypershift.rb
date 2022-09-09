@@ -7,14 +7,7 @@ class Hypershift < Formula
 
   def install
     system "make", "hypershift", "OUT_DIR=#{bin}"
-
-    # Install bash completion
-    output = Utils.safe_popen_read("#{bin}/hypershift", "completion", "bash")
-    (bash_completion/"hypershift").write output
-
-    # Install zsh completion
-    output = Utils.safe_popen_read("#{bin}/hypershift", "completion", "zsh")
-    (zsh_completion/"_hypershift").write output
+    generate_completions_from_executable(bin/"hypershift", "completion", base_name: "hypershift")
   end
 
   test do

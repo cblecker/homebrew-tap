@@ -10,18 +10,12 @@ class Ocm < Formula
   depends_on "go-bindata" => :build
 
   def install
-    # Generate bindata
-    system "go", "generate", "-x", "./cmd/...", "./pkg/..."
-
-    # Build binary
-    system "go", "build", "-o", "#{bin}/ocm", "./cmd/ocm"
-
-    # Install bash completion
-    output = Utils.safe_popen_read("#{bin}/ocm", "completion")
-    (bash_completion/"ocm").write output
+    system "go", "generate", *std_go_args, "./..."
+    system "go", "build", *std_go_args(output: bin/"ocm"), "./cmd/ocm"
+    generate_completions_from_executable(bin/"ocm", "completion", base_name: "ocm")
   end
 
   test do
-    assert_match(/^#{version}/, shell_output("#{bin}/ocm version"))
+    assert_match version.to_s, shell_output("#{bin}/ocm version")
   end
 end

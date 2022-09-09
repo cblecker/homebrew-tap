@@ -6,8 +6,7 @@ class KubectlDevTool < Formula
   depends_on "go" => :build
 
   def install
-    # Build binary
-    system "go", "build", "-o", "#{bin}/kubectl-dev_tool", "./cmd/kubectl-dev_tool"
+    system "go", "build", *std_go_args(output: bin/"kubectl-dev_tool"), "./cmd/kubectl-dev_tool"
   end
 
   test do

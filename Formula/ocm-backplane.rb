@@ -16,11 +16,11 @@ class OcmBackplane < Formula
   def install
     ENV["GOPRIVATE"] = "gitlab.cee.redhat.com"
 
-    # Build binary
-    system "go", "build", "-o", "#{bin}/ocm-backplane", "./cmd/ocm-backplane"
+    system "go", "build", *std_go_args(output: bin/"ocm-backplane"), "./cmd/ocm-backplane"
+    generate_completions_from_executable(bin/"ocm-backplane", "completion", base_name: "ocm-backplane")
   end
 
   test do
-    assert_match(/^#{version}/, shell_output("#{bin}/ocm-backplane version"))
+    assert_match version.to_s, shell_output("#{bin}/ocm-backplane version")
   end
 end

@@ -22,14 +22,7 @@ class OpenshiftCli < Formula
 
     system "make", "oc"
     bin.install "oc"
-
-    # Install bash completion
-    output = Utils.safe_popen_read("#{bin}/oc", "completion", "bash")
-    (bash_completion/"oc").write output
-
-    # Install zsh completion
-    output = Utils.safe_popen_read("#{bin}/oc", "completion", "zsh")
-    (zsh_completion/"_oc").write output
+    generate_completions_from_executable(bin/"oc", "completion", base_name: "oc")
   end
 
   test do
