@@ -13,16 +13,11 @@ class Osdctl < Formula
     # Don't dirty the git tree
     rm_rf ".brew_home"
 
-    # Build binary using goreleaser
-    system "goreleaser", "build", "--rm-dist"
+    # Create bin directory, as goreleaser doesn't do this
+    mkdir bin
 
-    # Select version to install from build
-    os = OS.linux? ? "linux" : "darwin"
-    arch = Hardware::CPU.arm? ? "arm64" : "amd64_v1"
-
-    bin.install "dist/osdctl_#{os}_#{arch}/osdctl"
-    prefix.install_metafiles
-    generate_completions_from_executable(bin/"osdctl", "completion", base_name: "osdctl")
+    system "goreleaser", "build", "--rm-dist", "--single-target", "--output=#{bin}/osdctl"
+    generate_completions_from_executable(bin/"osdctl", "completion", shells: [:bash, :zsh])
   end
 
   test do

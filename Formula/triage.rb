@@ -6,6 +6,6 @@ class Triage < Formula
   depends_on "go" => :build
 
   def install
-    system "go", "build", *std_go_args(output: bin/"triage"), "./cmd/triage"
+    system "go", "build", *std_go_args, "./cmd/triage"
   end
 end

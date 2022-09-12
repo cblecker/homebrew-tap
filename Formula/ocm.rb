@@ -7,12 +7,10 @@ class Ocm < Formula
   head "https://github.com/openshift-online/ocm-cli.git"
 
   depends_on "go" => :build
-  depends_on "go-bindata" => :build
 
   def install
-    system "go", "generate", *std_go_args, "./..."
-    system "go", "build", *std_go_args(output: bin/"ocm"), "./cmd/ocm"
-    generate_completions_from_executable(bin/"ocm", "completion", base_name: "ocm")
+    system "go", "build", *std_go_args, "./cmd/ocm"
+    generate_completions_from_executable(bin/"ocm", "completion")
   end
 
   test do

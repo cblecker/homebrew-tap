@@ -16,8 +16,8 @@ class OcmBackplane < Formula
   def install
     ENV["GOPRIVATE"] = "gitlab.cee.redhat.com"
 
-    system "go", "build", *std_go_args(output: bin/"ocm-backplane"), "./cmd/ocm-backplane"
-    generate_completions_from_executable(bin/"ocm-backplane", "completion", base_name: "ocm-backplane")
+    system "go", "build", *std_go_args, "./cmd/ocm-backplane"
+    generate_completions_from_executable(bin/"ocm-backplane", "completion")
   end
 
   test do
