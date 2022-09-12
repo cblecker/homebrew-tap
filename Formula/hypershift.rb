@@ -7,7 +7,7 @@ class Hypershift < Formula
 
   def install
     system "make", "hypershift", "OUT_DIR=#{bin}"
-    generate_completions_from_executable(bin/"hypershift", "completion", base_name: "hypershift")
+    generate_completions_from_executable(bin/"hypershift", "completion")
   end
 
   test do
