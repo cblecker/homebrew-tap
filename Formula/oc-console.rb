@@ -17,6 +17,5 @@ class OcConsole < Formula
     mkdir bin
 
     system "goreleaser", "build", "--rm-dist", "--single-target", "--output=#{bin}/oc-console"
-    generate_completions_from_executable(bin/"oc-console", "completion")
   end
 end
