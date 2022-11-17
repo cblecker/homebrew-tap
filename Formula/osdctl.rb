@@ -11,10 +11,11 @@ class Osdctl < Formula
 
   def install
     # Don't dirty the git tree
-    rm_rf ".brew_home"
+    (buildpath/".git/info/exclude").append_lines ".brew_home"
 
-    # Create bin directory, as goreleaser doesn't do this
+    # Create bin and .config directory, as goreleaser doesn't do this
     mkdir bin
+    mkdir_p buildpath/".brew_home/.config"
 
     system "goreleaser", "build", "--rm-dist", "--single-target", "--output=#{bin}/osdctl"
     generate_completions_from_executable(bin/"osdctl", "completion", shells: [:bash, :zsh])
