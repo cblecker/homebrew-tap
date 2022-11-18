@@ -13,8 +13,8 @@ class Osdctl < Formula
     # Don't dirty the git tree
     (buildpath/".git/info/exclude").append_lines ".brew_home"
 
-    # Create bin and .config directory, as goreleaser doesn't do this
-    mkdir bin
+    # Create bin directory, as goreleaser doesn't do this
+    bin.mkdir
 
     args = ["--rm-dist", "--single-target"]
     args << "--snapshot" if build.head?
@@ -34,5 +34,9 @@ class Osdctl < Formula
                   stable.instance_variable_get(:@resource).instance_variable_get(:@specs)[:revision].slice(0, 7)
       assert_match version_json["version"], version.to_s
     end
+
+    # Test that completions were generated
+    assert_match "complete -o default -F __start_osdctl osdctl", (bash_completion/"osdctl").read
+    assert_match "__osdctl_bash_source <(__osdctl_convert_bash_to_zsh)", (zsh_completion/"_osdctl").read
   end
 end
