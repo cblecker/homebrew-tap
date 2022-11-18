@@ -5,6 +5,7 @@ class Osdctl < Formula
       tag:      "v0.13.3",
       revision: "6ba715fbe6a80369eb5748ab680f0845f9cd3cb6"
   head "https://github.com/openshift/osdctl.git"
+  revision 1
 
   depends_on "go" => :build
   depends_on "goreleaser" => :build
@@ -15,7 +16,10 @@ class Osdctl < Formula
 
     # Create bin and .config directory, as goreleaser doesn't do this
     mkdir bin
-    mkdir_p buildpath/".brew_home/.config"
+
+    # Create .config directory for the stable release, as there is a bug.
+    # https://github.com/openshift/osdctl/pull/289
+    mkdir_p buildpath/".brew_home/.config" if build.stable?
 
     system "goreleaser", "build", "--rm-dist", "--single-target", "--output=#{bin}/osdctl"
     generate_completions_from_executable(bin/"osdctl", "completion", shells: [:bash, :zsh])
