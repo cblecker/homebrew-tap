@@ -11,11 +11,13 @@ class OcConsole < Formula
 
   def install
     # Don't dirty the git tree
-    rm_rf ".brew_home"
+    (buildpath/".git/info/exclude").append_lines ".brew_home"
 
     # Create bin directory, as goreleaser doesn't do this
     mkdir bin
 
-    system "goreleaser", "build", "--rm-dist", "--single-target", "--output=#{bin}/oc-console"
+    args = ["--rm-dist", "--single-target"]
+    args << "--snapshot" if build.head?
+    system "goreleaser", "build", *args, "--output=#{bin}/oc-console"
   end
 end
