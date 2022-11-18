@@ -2,10 +2,9 @@ class Osdctl < Formula
   desc "SRE toolbox utility for OpenShift Dedicated"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/osdctl.git",
-      tag:      "v0.13.3",
-      revision: "6ba715fbe6a80369eb5748ab680f0845f9cd3cb6"
+      tag:      "v0.13.4",
+      revision: "c8c4e457c2d3c0e604abab5660893937e949ce55"
   head "https://github.com/openshift/osdctl.git"
-  revision 1
 
   depends_on "go" => :build
   depends_on "goreleaser" => :build
@@ -16,10 +15,6 @@ class Osdctl < Formula
 
     # Create bin and .config directory, as goreleaser doesn't do this
     mkdir bin
-
-    # Create .config directory for the stable release, as there is a bug.
-    # https://github.com/openshift/osdctl/pull/289
-    mkdir_p buildpath/".brew_home/.config" if build.stable?
 
     args = ["--rm-dist", "--single-target"]
     args << "--snapshot" if build.head?
