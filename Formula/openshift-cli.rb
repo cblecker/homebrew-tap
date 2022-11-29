@@ -4,8 +4,7 @@ class OpenshiftCli < Formula
   url "https://github.com/openshift/oc.git",
       shallow:  false,
       # tag: => "v4.11.13",
-      # oc adm release info 4.11.13 --output=json | jq -r '.references.spec.tags[] | \
-      # select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
+      # oc adm release info 4.11.13 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
       revision: "142cb4431e96f510b4ed4c61a13d68cb13a76c3c"
   version "4.11.13"
   head "https://github.com/openshift/oc.git",
@@ -56,7 +55,6 @@ class OpenshiftCli < Formula
     # Test that we can generate and write a kubeconfig
     (testpath/"kubeconfig").write ""
     system "KUBECONFIG=#{testpath}/kubeconfig #{bin}/oc config set-context foo 2>&1"
-    context_output = shell_output("KUBECONFIG=#{testpath}/kubeconfig #{bin}/oc config get-contexts -o name")
-    assert_match "foo", context_output
+    assert_match "foo", shell_output("KUBECONFIG=#{testpath}/kubeconfig #{bin}/oc config get-contexts -o name")
   end
 end

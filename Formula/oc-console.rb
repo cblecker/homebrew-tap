@@ -20,4 +20,8 @@ class OcConsole < Formula
     args << "--snapshot" if build.head?
     system "goreleaser", "build", *args, "--output=#{bin}/oc-console"
   end
+
+  test do
+    assert_match "unable to determine console location", shell_output("#{bin}/oc-console --server=localhost 2>&1", 1)
+  end
 end
