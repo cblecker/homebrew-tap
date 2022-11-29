@@ -37,24 +37,12 @@ jobs:
 
       - run: brew audit --tap cblecker/tap --skip-style --except specs
 
-      - name: Set up Ruby
-        if: matrix.os == 'ubuntu-latest'
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "2.6"
-          bundler-cache: true
-
-      - name: Install Homebrew/homebrew-test-bot RubyGems
-        if: matrix.os == 'macOS-latest'
-        run: bundle install --jobs 4 --retry 3
-
       - name: Build Docker image and start container
         if: matrix.os == 'ubuntu-latest'
         run: |
-          docker build -t brew .
           docker create \
             -e GITHUB_ACTIONS -e GITHUB_BASE_REF -e GITHUB_REF -e GITHUB_REPOSITORY -e GITHUB_SHA \
-            --name=brewtestbot brew sleep infinity
+            --name=brewtestbot homebrew/ubuntu22.04:master sleep infinity
           docker start brewtestbot
 
       - run: brew test-bot --only-formulae-detect --test-default-formula
