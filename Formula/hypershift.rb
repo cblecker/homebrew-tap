@@ -11,6 +11,6 @@ class Hypershift < Formula
   end
 
   test do
-    assert_match(/.*quay.io\/hypershift\/hypershift-operator.*/, shell_output("#{bin}/hypershift install render"))
+    assert_match(%r{.*quay.io/hypershift/hypershift-operator.*}, shell_output("#{bin}/hypershift install render"))
   end
 end

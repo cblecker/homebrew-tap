@@ -42,6 +42,7 @@ class OcmBackplane < Formula
         user:
           token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     EOF
-    assert_match "the api server is not a backplane url", shell_output("KUBECONFIG=#{testpath}/kubeconfig #{bin}/ocm-backplane status 2>&1", 1)
+    assert_match "the api server is not a backplane url",
+shell_output("KUBECONFIG=#{testpath}/kubeconfig #{bin}/ocm-backplane status 2>&1", 1)
   end
 end

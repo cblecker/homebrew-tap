@@ -1,5 +1,5 @@
 class OcConsole < Formula
-  desc "oc plugin to open the OpenShift 4 console in your web browser"
+  desc "Oc plugin to open the OpenShift 4 console in your web browser"
   homepage "https://github.com/cblecker/oc-console/"
   url "https://github.com/cblecker/oc-console.git",
       tag:      "v1.2.1",
