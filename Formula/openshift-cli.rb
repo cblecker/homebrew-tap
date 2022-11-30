@@ -20,6 +20,7 @@ class OpenshiftCli < Formula
 
   def install
     ENV["SOURCE_GIT_TAG"] = version.to_s if build.stable?
+    ENV["GO_REQUIRED_MIN_VERSION"] = ""
 
     system "make", "oc"
     bin.install "oc"
