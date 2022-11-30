@@ -51,7 +51,7 @@ jobs:
 
       - id: formulae-detect
         run: |
-          if ! brew test-bot --only-formulae-detect; then
+          if ! brew test-bot --only-formulae-detect 2>&1; then
             echo "testing_formulae=$(brew tap-info cblecker/tap --json | jq -r '[.[]|(.formula_names[],.cask_tokens[])]|join(",")')" >> $GITHUB_OUTPUT
           fi
 
