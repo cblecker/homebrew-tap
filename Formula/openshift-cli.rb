@@ -19,12 +19,15 @@ class OpenshiftCli < Formula
   on_macos do
     depends_on "heimdal" => :build
   end
-  on_linux do
-    depends_on "krb5"
-  end
 
   def install
     ENV["SOURCE_GIT_TAG"] = version.to_s if build.stable?
+
+    if OS.linux?
+      ENV["SHELL"] = "/bin/bash"
+      # See https://github.com/golang/go/issues/26487
+      ENV.O0
+    end
 
     system "make", "oc"
     bin.install "oc"
