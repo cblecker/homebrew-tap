@@ -7,9 +7,9 @@
 del(.[]|
     select(
         .==(
-            "cblecker/tap/hypershift" # head only formula
-            "cblecker/tap/kubectl-dev_tool" # head only formula
-            "cblecker/tap/ocm-backplane" # internal tool
+            "cblecker/tap/hypershift",
+            "cblecker/tap/kubectl-dev_tool",
+            "cblecker/tap/ocm-backplane"
         )
     )
 )
