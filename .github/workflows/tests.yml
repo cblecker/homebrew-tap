@@ -37,7 +37,7 @@ jobs:
 
       - run: brew audit --tap cblecker/tap --skip-style --except specs
 
-      - name: Build Docker image and start container
+      - name: Start Docker container
         if: matrix.os == 'ubuntu-latest'
         run: |
           docker create \
@@ -45,11 +45,14 @@ jobs:
             --name=brewtestbot homebrew/ubuntu22.04:master sleep infinity
           docker start brewtestbot
 
-      - name: Select formulae to test
-        id: formulae-detect
+      - name: Install JQ
+        if: matrix.os == 'macos-latest'
+        run: brew install jq
+
+      - id: formulae-detect
         run: |
           if ! brew test-bot --only-formulae-detect; then
-            echo "::set-output testing_formulae=$(brew tap-info cblecker/tap --json | jq -r '[.[]|(.formula_names[],.cask_tokens[])]|join(",")')"
+            echo "testing_formulae=$(brew tap-info cblecker/tap --json | jq -r '[.[]|(.formula_names[],.cask_tokens[])]|join(",")')" >> $GITHUB_OUTPUT
           fi
 
       - name: Run brew test-bot --only-formulae --junit --only-json-tab --skip-dependents --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
@@ -76,13 +79,13 @@ jobs:
           fi
 
       - name: Output brew test-bot failures
-        if: matrix.os == 'macOS-latest'
+        if: matrix.os == 'macos-latest'
         run: |
           cat steps_output.txt
           rm steps_output.txt
 
       - name: Output brew bottle output
-        if: matrix.os == 'macOS-latest'
+        if: matrix.os == 'macos-latest'
         run: |
           cat bottle_output.txt
           rm bottle_output.txt
