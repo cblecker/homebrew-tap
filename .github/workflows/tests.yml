@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         os:
-        # - ubuntu-latest
-        - macOS-latest
+        - ubuntu-latest
+        - macos-latest
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -48,8 +48,7 @@ jobs:
       - name: Select formulae to test
         id: formulae-detect
         run: |
-          if ! brew test-bot --only-formulae-detect;
-          then
+          if ! brew test-bot --only-formulae-detect; then
             echo "::set-output testing_formulae=$(brew tap-info cblecker/tap --json | jq -r '[.[]|(.formula_names[],.cask_tokens[])]|join(",")')"
           fi
 
