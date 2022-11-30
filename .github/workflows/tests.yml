@@ -53,7 +53,7 @@ jobs:
         id: formulae-detect
         run: |
           if ! brew test-bot --only-formulae-detect 2>&1; then
-            echo "testing_formulae=$(brew tap-info cblecker/tap --json | jq -r -f test_exemptions.jq" >> $GITHUB_OUTPUT
+            echo "testing_formulae=$(brew tap-info cblecker/tap --json | jq -r -f test_exemptions.jq)" >> $GITHUB_OUTPUT
           fi
 
       - name: Run brew test-bot --only-formulae --junit --only-json-tab --skip-dependents --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
