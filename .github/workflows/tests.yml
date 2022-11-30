@@ -45,8 +45,13 @@ jobs:
             --name=brewtestbot homebrew/ubuntu22.04:master sleep infinity
           docker start brewtestbot
 
-      - run: brew test-bot --only-formulae-detect --test-default-formula
+      - name: Select formulae to test
         id: formulae-detect
+        run: |
+          if ! brew test-bot --only-formulae-detect;
+          then
+            echo "::set-output testing_formulae=$(brew tap-info cblecker/tap --json | jq -r '[.[]|(.formula_names[],.cask_tokens[])]|join(",")')"
+          fi
 
       - name: Run brew test-bot --only-formulae --junit --only-json-tab --skip-dependents --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
         id: brew-test-bot-formulae
