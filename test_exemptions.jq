@@ -12,4 +12,5 @@ del(.[]|
             "cblecker/tap/ocm-backplane"
         )
     )
-)
+)|
+join(",")
