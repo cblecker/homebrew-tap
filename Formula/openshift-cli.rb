@@ -23,7 +23,6 @@ class OpenshiftCli < Formula
     depends_on "krb5"
   end
 
-
   def install
     ENV["SOURCE_GIT_TAG"] = version.to_s if build.stable?
 
