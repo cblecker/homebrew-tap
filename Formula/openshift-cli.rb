@@ -23,13 +23,14 @@ class OpenshiftCli < Formula
   def install
     ENV["SOURCE_GIT_TAG"] = version.to_s if build.stable?
 
+    args = []
     if OS.linux?
-      ENV["SHELL"] = "/bin/bash"
+      args << "SHELL=/bin/bash"
       # See https://github.com/golang/go/issues/26487
       ENV.O0
     end
 
-    system "make", "oc"
+    system "make", "oc", *args
     bin.install "oc"
     generate_completions_from_executable(bin/"oc", "completion", base_name: "oc")
   end
