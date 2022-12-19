@@ -8,16 +8,19 @@ class Ocm < Formula
 
   depends_on "go" => :build
 
+  binary_name = "ocm"
+
   def install
-    system "go", "build", *std_go_args, "./cmd/ocm"
-    generate_completions_from_executable(bin/"ocm", "completion")
+    system "go", "build", *std_go_args, "./cmd/#{binary_name}"
+    generate_completions_from_executable(bin/binary_name.to_s, "completion")
   end
 
   test do
-    assert_match version.to_s, shell_output("#{bin}/ocm version")
+    assert_match version.to_s, shell_output("#{bin}/#{binary_name} version")
 
     # Test that completions were generated
-    assert_match "complete -o default -F __start_ocm ocm", (bash_completion/"ocm").read
-    assert_match "__ocm_bash_source <(__ocm_convert_bash_to_zsh)", (zsh_completion/"_ocm").read
+    assert_match(/^# bash completion .* -\*- shell-script -\*-$/, (bash_completion/binary_name.to_s).read)
+    assert_match(/^# zsh completion .* -\*- shell-script -\*-$/, (zsh_completion/"_#{binary_name}").read)
+    assert_match(/^# fish completion .* -\*- shell-script -\*-$/, (fish_completion/"#{binary_name}.fish").read)
   end
 end
