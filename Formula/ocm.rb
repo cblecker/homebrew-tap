@@ -4,8 +4,8 @@ class Ocm < Formula
   url "https://github.com/openshift-online/ocm-cli.git",
       tag:      "v0.1.65",
       revision: "7b624131af6f661be8c9a14b35e5156995346bcf"
-  head "https://github.com/openshift-online/ocm-cli.git"
   revision 1
+  head "https://github.com/openshift-online/ocm-cli.git"
 
   depends_on "go" => :build
 
