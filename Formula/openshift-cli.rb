@@ -16,11 +16,11 @@ class OpenshiftCli < Formula
   end
 
   depends_on "go" => :build
+  uses_from_macos "krb5"
+
   on_macos do
     depends_on "heimdal" => :build
   end
-
-  uses_from_macos "krb5"
 
   def install
     ENV["SOURCE_GIT_TAG"] = version.to_s if build.stable?
