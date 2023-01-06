@@ -2,8 +2,8 @@ class OcmBackplane < Formula
   desc "CLI for interacting with the IMS Backplane"
   homepage "https://www.openshift.com/"
   url "https://gitlab.cee.redhat.com/service/backplane-cli.git",
-      tag:      "0.0.33",
-      revision: "c1c4954d37517d082130015a91b1422c88d049d4"
+      tag:      "0.0.34",
+      revision: "3be974d622eeb5ade9e6d09045aef5f26820e07b"
   head "https://gitlab.cee.redhat.com/service/backplane-cli.git"
 
   livecheck do
@@ -22,6 +22,7 @@ class OcmBackplane < Formula
 
   test do
     assert_match version.to_s, shell_output("#{bin}/ocm-backplane version")
+
     (testpath/"kubeconfig").write(<<~EOF)
       apiVersion: v1
       clusters:
@@ -43,6 +44,11 @@ class OcmBackplane < Formula
           token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     EOF
     assert_match "the api server is not a backplane url",
-shell_output("KUBECONFIG=#{testpath}/kubeconfig #{bin}/ocm-backplane status 2>&1", 1)
+      shell_output("KUBECONFIG=#{testpath}/kubeconfig #{bin}/ocm-backplane status 2>&1", 1)
+
+    # Test that completions were generated
+    assert_match(/^# bash completion .* -\*- shell-script -\*-$/, (bash_completion/"ocm-backplane").read)
+    assert_match(/^# zsh completion .* -\*- shell-script -\*-$/, (zsh_completion/"_ocm-backplane").read)
+    assert_match(/^# fish completion .* -\*- shell-script -\*-$/, (fish_completion/"ocm-backplane.fish").read)
   end
 end
