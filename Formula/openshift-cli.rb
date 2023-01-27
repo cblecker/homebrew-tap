@@ -48,8 +48,7 @@ class OpenshiftCli < Formula
     if build.stable?
       # Verify the built artifact matches the formula
       assert_match version_json["clientVersion"]["gitVersion"], "v#{version}"
-      assert_equal version_json["clientVersion"]["gitCommit"],
-                   stable.instance_variable_get(:@resource).instance_variable_get(:@specs)[:revision].slice(0, 9)
+      assert_equal version_json["clientVersion"]["gitCommit"], stable.specs[:revision].slice(0, 9)
 
       # Get remote release details
       release_raw = shell_output("#{bin}/oc adm release info #{version} --output=json")
@@ -58,8 +57,7 @@ class OpenshiftCli < Formula
       # Verify the formula matches the release data for the version
       assert_match release_json["references"]["spec"]["tags"].find { |tag|
                      tag["name"]=="cli"
-                   } ["annotations"]["io.openshift.build.commit.id"],
-                   stable.instance_variable_get(:@resource).instance_variable_get(:@specs)[:revision]
+                   } ["annotations"]["io.openshift.build.commit.id"], stable.specs[:revision]
 
     end
 
