@@ -1,7 +1,7 @@
 class KubectlDevTool < Formula
   desc "Kubectl/oc plugin with various tools useful for the OpenShift developers"
   homepage "https://www.openshift.com/"
-  head "https://github.com/openshift/cluster-debug-tools.git"
+  head "https://github.com/openshift/cluster-debug-tools.git", branch: "master"
 
   depends_on "go" => :build
 

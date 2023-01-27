@@ -4,7 +4,7 @@ class OcmBackplane < Formula
   url "https://gitlab.cee.redhat.com/service/backplane-cli.git",
       tag:      "0.0.34",
       revision: "3be974d622eeb5ade9e6d09045aef5f26820e07b"
-  head "https://gitlab.cee.redhat.com/service/backplane-cli.git"
+  head "https://gitlab.cee.redhat.com/service/backplane-cli.git", branch: "master"
 
   livecheck do
     url :stable

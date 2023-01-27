@@ -4,7 +4,7 @@ class OcConsole < Formula
   url "https://github.com/cblecker/oc-console.git",
       tag:      "v1.2.1",
       revision: "8d01b0e9d7a1584141d44d48324a163a492e1c9f"
-  head "https://github.com/cblecker/oc-console.git"
+  head "https://github.com/cblecker/oc-console.git", branch: "main"
 
   depends_on "go" => :build
   depends_on "goreleaser" => :build

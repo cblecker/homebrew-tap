@@ -4,7 +4,7 @@ class Triage < Formula
   url "https://github.com/tj/triage.git",
       tag:      "v1.0.0",
       revision: "994fb89cf67a1ad8b92e9dc49f42bc9eb7022d6b"
-  head "https://github.com/tj/triage.git"
+  head "https://github.com/tj/triage.git", branch: "master"
 
   depends_on "go" => :build
 

@@ -4,7 +4,7 @@ class Osdctl < Formula
   url "https://github.com/openshift/osdctl.git",
       tag:      "v0.13.5",
       revision: "edee89ebffcb1079bece31b8e234287fb721759f"
-  head "https://github.com/openshift/osdctl.git"
+  head "https://github.com/openshift/osdctl.git", branch: "master"
 
   depends_on "go" => :build
   depends_on "goreleaser" => :build

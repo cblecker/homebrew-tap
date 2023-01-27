@@ -7,8 +7,7 @@ class OpenshiftCli < Formula
       # oc adm release info 4.12.0 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
       revision: "854f807d8a84dde710c062a5281bca5bc07cb562"
   version "4.12.0"
-  head "https://github.com/openshift/oc.git",
-       shallow: false
+  head "https://github.com/openshift/oc.git", shallow: false, branch: "master"
 
   livecheck do
     url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/"
