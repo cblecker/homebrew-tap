@@ -20,18 +20,17 @@ class Osdctl < Formula
     args << "--snapshot" if build.head?
     system "goreleaser", "build", *args, "--output=#{bin}/osdctl"
 
-    generate_completions_from_executable(bin/"osdctl", "completion", shells: [:bash, :zsh])
+    generate_completions_from_executable(bin/"osdctl", "completion", "--skip-version-check", shells: [:bash, :zsh])
   end
 
   test do
     # Grab version details from built client
-    version_raw = shell_output("#{bin}/osdctl version")
+    version_raw = shell_output("#{bin}/osdctl version --skip-version-check")
     version_json = JSON.parse(version_raw)
 
     if build.stable?
       # Verify the built artifact matches the formula
-      assert_equal version_json["commit"],
-                  stable.instance_variable_get(:@resource).instance_variable_get(:@specs)[:revision].slice(0, 7)
+      assert_equal version_json["commit"], stable.specs[:revision]
       assert_match version_json["version"], version.to_s
     end
 
