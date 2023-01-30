@@ -31,7 +31,7 @@ class Osdctl < Formula
     if build.stable?
       # Verify the built artifact matches the formula
       assert_equal version_json["commit"], stable.specs[:revision]
-      assert_match version_json["version"], version.to_s
+      assert_equal version_json["version"], version.to_s
     end
 
     # Test that completions were generated
