@@ -41,9 +41,11 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           docker create \
-            -e GITHUB_ACTIONS -e GITHUB_BASE_REF -e GITHUB_REF -e GITHUB_REPOSITORY -e GITHUB_SHA -e GITHUB_OUTPUT \
-            -v /github/file_commands:/github/file_commands --name=brewtestbot homebrew/ubuntu22.04:master sleep infinity
+            -e GITHUB_ACTIONS -e GITHUB_BASE_REF -e GITHUB_OUTPUT -e GITHUB_REF -e GITHUB_REPOSITORY -e GITHUB_SHA \
+            -v "$GITHUB_OUTPUT:$GITHUB_OUTPUT" --name=brewtestbot homebrew/ubuntu22.04:master sleep infinity
           docker start brewtestbot
+          docker exec brewtestbot \
+            sudo setfacl -Rm "d:u:linuxbrew:rwX,u:linuxbrew:rwX" "$RUNNER_TEMP"
 
       - name: Install JQ
         if: matrix.os == 'macos-latest'
