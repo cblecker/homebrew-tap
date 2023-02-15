@@ -27,7 +27,6 @@ class OpenshiftCli < Formula
     args = []
     if OS.linux?
       args << "SHELL=/bin/bash"
-      # See https://github.com/golang/go/issues/26487
       ENV.O0
     end
 
