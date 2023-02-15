@@ -121,7 +121,7 @@ jobs:
           fi
 
       - name: Cleanup Docker container
-        if: matrix.os == 'ubuntu-latest'
+        if: always() && matrix.os == 'ubuntu-latest'
         run: |
           docker stop brewtestbot
           docker rm brewtestbot
