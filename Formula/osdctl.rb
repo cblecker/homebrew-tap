@@ -6,8 +6,8 @@ class Osdctl < Formula
       revision: "bf7b850211724ee5bee23934bb665819b568bcc3"
   head "https://github.com/openshift/osdctl.git", branch: "master"
 
-  depends_on "homebrew/core/go" => :build
-  depends_on "homebrew/core/goreleaser" => :build
+  depends_on "go" => :build
+  depends_on "goreleaser" => :build
 
   def install
     # Don't dirty the git tree

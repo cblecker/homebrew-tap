@@ -10,7 +10,7 @@ class OcmBackplane < Formula
     regex(/^v?(\d+(?:\.\d+)+)$/i)
   end
 
-  depends_on "homebrew/core/go" => :build
+  depends_on "go" => :build
 
   def install
     ENV["GOPRIVATE"] = "gitlab.cee.redhat.com"

@@ -3,7 +3,7 @@ class KubectlDevTool < Formula
   homepage "https://www.openshift.com/"
   head "https://github.com/openshift/cluster-debug-tools.git", branch: "master"
 
-  depends_on "homebrew/core/go" => :build
+  depends_on "go" => :build
 
   def install
     system "go", "build", *std_go_args(output: bin/"kubectl-dev_tool"), "./cmd/kubectl-dev_tool"

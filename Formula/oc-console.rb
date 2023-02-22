@@ -6,8 +6,8 @@ class OcConsole < Formula
       revision: "8d01b0e9d7a1584141d44d48324a163a492e1c9f"
   head "https://github.com/cblecker/oc-console.git", branch: "main"
 
-  depends_on "homebrew/core/go" => :build
-  depends_on "homebrew/core/goreleaser" => :build
+  depends_on "go" => :build
+  depends_on "goreleaser" => :build
 
   def install
     # Don't dirty the git tree
