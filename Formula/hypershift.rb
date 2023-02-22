@@ -3,7 +3,7 @@ class Hypershift < Formula
   homepage "https://www.openshift.com/"
   head "https://github.com/openshift/hypershift.git", branch: "main"
 
-  depends_on "go" => :build
+  depends_on "homebrew/core/go" => :build
 
   def install
     system "make", "hypershift", "OUT_DIR=#{bin}"

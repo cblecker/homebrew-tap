@@ -14,11 +14,11 @@ class OpenshiftCli < Formula
     regex(/href=.*?openshift-client-mac-(\d+(?:\.\d+)+)\.t/i)
   end
 
-  depends_on "go" => :build
-  uses_from_macos "krb5"
+  depends_on "homebrew/core/go" => :build
+  uses_from_macos "homebrew/core/krb5"
 
   on_macos do
-    depends_on "heimdal" => :build
+    depends_on "homebrew/core/heimdal" => :build
   end
 
   def install
