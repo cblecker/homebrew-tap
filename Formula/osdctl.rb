@@ -1,8 +1,9 @@
 class Osdctl < Formula
   desc "SRE toolbox utility for OpenShift Dedicated"
   homepage "https://www.openshift.com/"
-  url "https://github.com/openshift/osdctl/archive/refs/tags/v0.14.1.tar.gz"
-  sha256 "b5cae49741ca78371b09ffc1a0fadc417d9f3729174e8fdba88e122107c7e635"
+  url "https://github.com/openshift/osdctl.git",
+      tag:      "v0.14.1",
+      revision: "55718f537f8df869b03ac759f5eb7907b499c3ca"
   head "https://github.com/openshift/osdctl.git", branch: "master"
 
   depends_on "go" => :build
@@ -15,7 +16,7 @@ class Osdctl < Formula
     # Create bin directory, as goreleaser doesn't do this
     bin.mkdir
 
-    args = ["--rm-dist", "--single-target"]
+    args = ["--clean", "--single-target"]
     args << "--snapshot" if build.head?
     system "goreleaser", "build", *args, "--output=#{bin}/osdctl"
 
