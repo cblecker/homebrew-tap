@@ -1,17 +1,14 @@
 class OpenshiftCli < Formula
   desc "OpenShift command-line interface tools"
   homepage "https://www.openshift.com/"
-  url "https://github.com/openshift/oc.git",
-      shallow:  false,
-      # tag: => "v4.12.10",
-      # oc adm release info 4.12.10 --output=json | jq -r '.references.spec.tags[] | select (.name=="cli") | .annotations."io.openshift.build.commit.id"'
-      revision: "31aa3e89a926f81aa0af30320ffcb71acadf3015"
-  version "4.12.10"
+  url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.12.12/oc-source.tar.gz"
+  version "4.12.12"
+  sha256 "807262caeb6d4c01ca63979425767a786190a840c95cc04cecfbf5919d54c7b1"
   head "https://github.com/openshift/oc.git", shallow: false, branch: "master"
 
   livecheck do
     url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/"
-    regex(/href=.*?openshift-client-mac-(\d+(?:\.\d+)+)\.t/i)
+    regex(/href=.*?openshift-client-src-(\d+(?:\.\d+)+)\.t/i)
   end
 
   depends_on "go" => :build
@@ -22,15 +19,15 @@ class OpenshiftCli < Formula
   end
 
   def install
-    ENV["SOURCE_GIT_TAG"] = version.to_s if build.stable?
-
-    args = []
-    if OS.linux?
-      args << "SHELL=/bin/bash"
-      ENV.O0
+    if build.stable?
+      ENV["OS_GIT_VERSION"] = version.to_s
+      ENV["SOURCE_GIT_COMMIT"] = Pathname.pwd.basename.to_s.delete_prefix("oc-")
     end
 
-    system "make", "oc", *args
+    # See https://github.com/golang/go/issues/26487
+    ENV.O0 if OS.linux?
+
+    system "make", "oc", "SHELL=/bin/bash"
     bin.install "oc"
     generate_completions_from_executable(bin/"oc", "completion", base_name: "oc")
   end
@@ -46,16 +43,16 @@ class OpenshiftCli < Formula
     if build.stable?
       # Verify the built artifact matches the formula
       assert_match version_json["clientVersion"]["gitVersion"], "v#{version}"
-      assert_equal version_json["clientVersion"]["gitCommit"], stable.specs[:revision].slice(0, 9)
 
       # Get remote release details
       release_raw = shell_output("#{bin}/oc adm release info #{version} --output=json")
       release_json = JSON.parse(release_raw)
 
       # Verify the formula matches the release data for the version
-      assert_match release_json["references"]["spec"]["tags"].find { |tag|
-                     tag["name"]=="cli"
-                   } ["annotations"]["io.openshift.build.commit.id"], stable.specs[:revision]
+      assert_match version_json["clientVersion"]["gitVersion"],
+        release_json["references"]["spec"]["tags"].find { |tag|
+          tag["name"]=="cli"
+        } ["annotations"]["io.openshift.build.commit.id"]
 
     end
 
