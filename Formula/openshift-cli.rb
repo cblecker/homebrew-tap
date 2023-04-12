@@ -3,6 +3,7 @@ class OpenshiftCli < Formula
   homepage "https://www.openshift.com/"
   url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.12.12/oc-source.tar.gz"
   sha256 "807262caeb6d4c01ca63979425767a786190a840c95cc04cecfbf5919d54c7b1"
+  license "Apache-2.0"
   head "https://github.com/openshift/oc.git", shallow: false, branch: "master"
 
   livecheck do
