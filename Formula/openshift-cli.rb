@@ -2,7 +2,6 @@ class OpenshiftCli < Formula
   desc "OpenShift command-line interface tools"
   homepage "https://www.openshift.com/"
   url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.12.12/oc-source.tar.gz"
-  version "4.12.12"
   sha256 "807262caeb6d4c01ca63979425767a786190a840c95cc04cecfbf5919d54c7b1"
   head "https://github.com/openshift/oc.git", shallow: false, branch: "master"
 
@@ -49,7 +48,7 @@ class OpenshiftCli < Formula
       release_json = JSON.parse(release_raw)
 
       # Verify the formula matches the release data for the version
-      assert_match version_json["clientVersion"]["gitVersion"],
+      assert_match version_json["clientVersion"]["gitCommit"],
         release_json["references"]["spec"]["tags"].find { |tag|
           tag["name"]=="cli"
         } ["annotations"]["io.openshift.build.commit.id"]
