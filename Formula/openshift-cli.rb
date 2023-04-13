@@ -8,7 +8,7 @@ class OpenshiftCli < Formula
 
   livecheck do
     url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/"
-    regex(/href=.*?openshift-client-src-(\d+(?:\.\d+)+)\.t/i)
+    regex(/href=.*?openshift-client-mac-(\d+(?:\.\d+)+)\.t/i)
   end
 
   depends_on "go" => :build
