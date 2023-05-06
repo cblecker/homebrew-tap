@@ -1,7 +1,7 @@
 class OpenshiftCli < Formula
   desc "OpenShift command-line interface tools"
   homepage "https://www.openshift.com/"
-  url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.12.13/openshift-client-src.tar.gz"
+  url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.12.14/openshift-client-src.tar.gz"
   sha256 "807262caeb6d4c01ca63979425767a786190a840c95cc04cecfbf5919d54c7b1"
   license "Apache-2.0"
   head "https://github.com/openshift/oc.git", shallow: false, branch: "master"
@@ -24,7 +24,7 @@ class OpenshiftCli < Formula
       ENV["SOURCE_GIT_COMMIT"] = Pathname.pwd.basename.to_s.delete_prefix("oc-")
     end
 
-    # See https://github.com/golang/go/issues/26487
+    # See https://github.com/Homebrew/brew/issues/14763
     ENV.O0 if OS.linux?
 
     system "make", "oc", "SHELL=/bin/bash"
@@ -40,7 +40,7 @@ class OpenshiftCli < Formula
     # Ensure that we had a clean build tree
     assert_equal "clean", version_json["clientVersion"]["gitTreeState"]
 
-    if build.stable?
+    if stable?
       # Verify the built artifact matches the formula
       assert_match version_json["clientVersion"]["gitVersion"], "v#{version}"
 
