@@ -17,16 +17,12 @@ class OpenshiftCli < Formula
   def install
     arch = Hardware::CPU.intel? ? "amd64" : Hardware::CPU.arch.to_s
     os = OS.kernel_name.downcase
-
-    if build.stable?
-      ENV["OS_GIT_VERSION"] = version.to_s
-      ENV["SOURCE_GIT_COMMIT"] = Pathname.pwd.basename.to_s.delete_prefix("oc-")
-    end
+    revision = build.head? ? Utils.git_head : Pathname.pwd.basename.to_s.delete_prefix("oc-")
 
     # See https://github.com/Homebrew/brew/issues/14763
     ENV.O0 if OS.linux?
 
-    system "make", "cross-build-#{os}-#{arch}", "SHELL=/bin/bash"
+    system "make", "cross-build-#{os}-#{arch}", "OS_GIT_VERSION=#{version}", "SOURCE_GIT_COMMIT=#{revision}", "SHELL=/bin/bash"
     bin.install "_output/bin/#{os}_#{arch}/oc"
     generate_completions_from_executable(bin/"oc", "completion", base_name: "oc")
   end
