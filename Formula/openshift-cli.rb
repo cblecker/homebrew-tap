@@ -1,24 +1,23 @@
 class OpenshiftCli < Formula
   desc "OpenShift command-line interface tools"
   homepage "https://www.openshift.com/"
-  url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.12.15/openshift-client-src.tar.gz"
+  url "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.12.15/openshift-client-src.tar.gz"
   sha256 "807262caeb6d4c01ca63979425767a786190a840c95cc04cecfbf5919d54c7b1"
   license "Apache-2.0"
   head "https://github.com/openshift/oc.git", shallow: false, branch: "master"
 
   livecheck do
-    url "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/"
+    url "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/"
     regex(/href=.*?openshift-client-mac-(\d+(?:\.\d+)+)\.t/i)
   end
 
   depends_on "go" => :build
   uses_from_macos "krb5"
 
-  on_macos do
-    depends_on "heimdal" => :build
-  end
-
   def install
+    arch = Hardware::CPU.intel? ? "amd64" : Hardware::CPU.arch.to_s
+    os = OS.kernel_name.downcase
+
     if build.stable?
       ENV["OS_GIT_VERSION"] = version.to_s
       ENV["SOURCE_GIT_COMMIT"] = Pathname.pwd.basename.to_s.delete_prefix("oc-")
@@ -27,8 +26,8 @@ class OpenshiftCli < Formula
     # See https://github.com/Homebrew/brew/issues/14763
     ENV.O0 if OS.linux?
 
-    system "make", "oc", "SHELL=/bin/bash"
-    bin.install "oc"
+    system "make", "cross-build-#{os}-#{arch}", "SHELL=/bin/bash"
+    bin.install "_output/bin/#{os}_#{arch}/oc"
     generate_completions_from_executable(bin/"oc", "completion", base_name: "oc")
   end
 
