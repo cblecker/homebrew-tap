@@ -1,22 +1,32 @@
 class OcmBackplane < Formula
   desc "CLI for interacting with the IMS Backplane"
   homepage "https://www.openshift.com/"
-  url "https://gitlab.cee.redhat.com/service/backplane-cli/-/archive/0.0.35/backplane-cli-0.0.35.tar.gz"
-  sha256 "3ad3e80449998e788b2cd86b597adb879b57c377a1baffa965f54717cd57613f"
-  head "https://gitlab.cee.redhat.com/service/backplane-cli.git", branch: "master"
-
-  livecheck do
-    url :stable
-    regex(/^v?(\d+(?:\.\d+)+)$/i)
-  end
+  url "https://github.com/openshift/backplane-cli.git",
+      tag:      "v0.1.5",
+      revision: "42a9cba40dc5ce10a1f2bde898accc0ded5531d0"
+  head "https://github.com/openshift/backplane-cli.git", branch: "main"
 
   depends_on "go" => :build
+  depends_on "goreleaser" => :build
 
   def install
-    ENV["GOPRIVATE"] = "gitlab.cee.redhat.com"
+    # Don't dirty the git tree
+    (buildpath/".git/info/exclude").append_lines ".brew_home"
 
-    system "go", "build", *std_go_args, "./cmd/ocm-backplane"
+    # Create bin directory, as goreleaser doesn't do this
+    mkdir bin
+
+    args = ["--clean", "--single-target"]
+    args << "--snapshot" if build.head?
+    system "goreleaser", "build", *args, "--output=#{bin}/ocm-backplane"
     generate_completions_from_executable(bin/"ocm-backplane", "completion")
+  end
+
+  def caveats
+    <<~EOS
+      Please ensure you follow setup instructions for the Backplane CLI:
+      https://url.corp.redhat.com/3fb13db
+    EOS
   end
 
   test do
@@ -42,7 +52,7 @@ class OcmBackplane < Formula
         user:
           token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     EOF
-    assert_match "the api server is not a backplane url",
+    assert_match "couldn't find cluster-id from the backplane cluster url",
       shell_output("KUBECONFIG=#{testpath}/kubeconfig #{bin}/ocm-backplane status 2>&1", 1)
 
     # Test that completions were generated

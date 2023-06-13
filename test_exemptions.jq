@@ -8,8 +8,7 @@ del(.[]|
     select(
         .==(
             "cblecker/tap/hypershift",
-            "cblecker/tap/kubectl-dev_tool",
-            "cblecker/tap/ocm-backplane"
+            "cblecker/tap/kubectl-dev_tool"
         )
     )
 )|
