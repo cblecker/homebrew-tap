@@ -2,8 +2,8 @@ class OcmBackplane < Formula
   desc "CLI for interacting with the IMS Backplane"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/backplane-cli.git",
-      tag:      "v0.1.22",
-      revision: "0b8e642c6c7026c54529fb7f32094e3c1dbf11a7"
+      tag:      "v0.1.23",
+      revision: "fd283b0321df9a349e5a259198b2d1a2cb692a2a"
   head "https://github.com/openshift/backplane-cli.git", branch: "main"
 
   depends_on "go" => :build
