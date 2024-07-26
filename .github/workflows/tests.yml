@@ -43,6 +43,7 @@ jobs:
         id: formulae-detect
         run: |
           if ! brew test-bot --only-formulae-detect 2>&1; then
+            # shellcheck disable=SC2086
             echo "testing_formulae=$(brew tap-info cblecker/tap --json | jq -r -f test_exemptions.jq)" >> $GITHUB_OUTPUT
           fi
 
