@@ -2,8 +2,8 @@ class Osdctl < Formula
   desc "SRE toolbox utility for OpenShift Dedicated"
   homepage "https://www.openshift.com/"
   url "https://github.com/openshift/osdctl.git",
-      tag:      "v0.38.0",
-      revision: "34928620ad414d7657e25898524cecea58199e6a"
+      tag:      "v0.39.0",
+      revision: "8075854d206dc7f08a3f6d08d32aa67be682ab75"
   head "https://github.com/openshift/osdctl.git", branch: "master"
 
   depends_on "go" => :build
