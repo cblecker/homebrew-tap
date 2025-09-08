@@ -67,3 +67,7 @@ When bumping formula versions, follow this process:
    - Create individual commits for each formula touched
    - Use commit message format: `<formula-name> <version>` (e.g., "osdctl 0.46.0")
    - Work directly on the main branch (no feature branches or PRs)
+
+## Additional Notes
+
+- If I don't specify which formula to bump when I ask you to bump the formula versions, you can use the command `brew livecheck --tap=cblecker/tap --newer-only --quiet` to list out which formulas may need bumps
