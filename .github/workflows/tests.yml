@@ -43,10 +43,8 @@ jobs:
       - name: Detect formulae to test
         id: formulae-detect
         run: |
-          if brew test-bot --only-formulae-detect 2>&1; then
-            echo "Formula detection completed successfully"
-          else
-            # shellcheck disable=SC2086
+          # Try automatic detection first, fall back to manual listing if it fails
+          if ! brew test-bot --only-formulae-detect 2>&1; then
             echo "testing_formulae=$(brew tap-info cblecker/tap --json | jq -r -f test_exemptions.jq)" >> $GITHUB_OUTPUT
           fi
 
