@@ -43,7 +43,9 @@ jobs:
       - name: Detect formulae to test
         id: formulae-detect
         run: |
-          if ! brew test-bot --only-formulae-detect 2>&1; then
+          if brew test-bot --only-formulae-detect 2>&1; then
+            echo "Formula detection completed successfully"
+          else
             # shellcheck disable=SC2086
             echo "testing_formulae=$(brew tap-info cblecker/tap --json | jq -r -f test_exemptions.jq)" >> $GITHUB_OUTPUT
           fi
@@ -101,13 +103,13 @@ jobs:
             brew test-bot --only-setup --dry-run
           fi
 
-      - name: Run brew test-bot testbottest --only-formulae --dry-run
+      - name: Run brew test-bot --only-formulae --dry-run
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
             docker exec brewtestbot \
-              brew test-bot testbottest --only-formulae --dry-run
+              brew test-bot --only-formulae --dry-run --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
           else
-            brew test-bot testbottest --only-formulae --dry-run
+            brew test-bot --only-formulae --dry-run --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
           fi
 
       - name: Cleanup Docker container
