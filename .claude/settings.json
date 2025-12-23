@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:eu-central-1-1.aws.cloud2.influxdata.com)",
+      "WebFetch(domain:index.rubygems.org)",
+      "WebFetch(domain:rubygems.org)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
