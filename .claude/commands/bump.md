@@ -1,6 +1,6 @@
 ---
 description: Bump Homebrew formula versions
-allowed-tools: Bash(brew livecheck:*), Bash(git ls-remote:*), Bash(git add:*), Bash(git commit:*), Read, Edit, Grep, Glob, mcp__github__list_releases
+allowed-tools: Bash(brew livecheck --tap=cblecker/tap *), Bash(git ls-remote * refs/tags/*), Bash(git add Formula/*), Bash(git commit -m *), Read, Edit(Formula/**), Grep, Glob, mcp__plugin_github_github__get_latest_release
 argument-hint: "[formula-name]"
 ---
 
