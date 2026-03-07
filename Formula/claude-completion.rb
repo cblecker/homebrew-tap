@@ -13,7 +13,7 @@ class ClaudeCompletion < Formula
   end
 
   test do
-    assert_predicate bash_completion/"claude", :exist?
+    assert_path_exists bash_completion/"claude"
     assert_match "_comp_cmd_claude", (bash_completion/"claude").read
   end
 end
