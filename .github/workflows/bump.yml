@@ -10,73 +10,42 @@ concurrency:
   group: bump-formulas
   cancel-in-progress: false
 jobs:
-  bump:
+  detect:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Generate App Token
-        id: app-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.AUTOMATION_APP_ID }}
-          private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
-
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
 
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Configure Git identity
-        env:
-          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
-        run: |
-          git config user.name "${APP_SLUG}[bot]"
-          git config user.email "${APP_SLUG}[bot]@users.noreply.github.com"
-
       - name: Detect outdated formulas
-        id: livecheck
+        id: set-matrix
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           echo "Running brew livecheck..."
           LIVECHECK_JSON=$(brew livecheck --tap=cblecker/tap --newer-only --quiet --json | jq -c '.')
           echo "${LIVECHECK_JSON}" | jq .
-          COUNT=$(echo "${LIVECHECK_JSON}" | jq 'length')
-          echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
-          {
-            echo "json<<LIVECHECK_EOF"
-            echo "${LIVECHECK_JSON}"
-            echo "LIVECHECK_EOF"
-          } >> "$GITHUB_OUTPUT"
-          echo "Found ${COUNT} formula(s) to bump."
 
-      - name: Bump each formula
-        if: steps.livecheck.outputs.count != '0'
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          LIVECHECK_JSON: ${{ steps.livecheck.outputs.json }}
-        run: |
-          FAILURES=0
-
+          MATRIX="[]"
           while read -r entry; do
             FORMULA=$(echo "${entry}" | jq -r '.formula')
             CURRENT=$(echo "${entry}" | jq -r '.version.current')
             LATEST=$(echo "${entry}" | jq -r '.version.latest')
-
-            echo "=========================================="
-            echo "Processing: ${FORMULA} ${CURRENT} -> ${LATEST}"
-            echo "=========================================="
-
-            # Extract just the formula name (remove tap prefix if present)
             FORMULA_NAME="${FORMULA##*/}"
 
-            # Skip if formula file lacks a tag: field (head-only)
+            # Skip head-only formulas
             if ! grep -q 'tag:' "Formula/${FORMULA_NAME}.rb" 2>/dev/null; then
-              echo "Skipping ${FORMULA_NAME}: head-only formula (no tag: field)"
+              echo "Skipping ${FORMULA_NAME}: head-only formula"
               continue
             fi
 
-            # Determine tag format from current tag in formula
+            # Determine tag format
             CURRENT_TAG=$(grep 'tag:' "Formula/${FORMULA_NAME}.rb" | head -1 | sed 's/.*tag:.*"\(.*\)".*/\1/')
             if [[ "${CURRENT_TAG}" == v* ]]; then
               NEW_TAG="v${LATEST}"
@@ -93,52 +62,52 @@ jobs:
               continue
             fi
 
-            # Create branch, bump, commit, push, and create PR
-            if ! git checkout -b "${BRANCH}" master; then
-              echo "Error: Failed to create branch ${BRANCH}"
-              FAILURES=$((FAILURES + 1))
-              continue
-            fi
-
-            if ./scripts/bump-formula.sh "${FORMULA_NAME}" "${NEW_TAG}"; then
-              git add "Formula/${FORMULA_NAME}.rb"
-              git commit -m "${FORMULA_NAME} ${LATEST}"
-
-              PR_BODY="Automated bump of '${FORMULA_NAME}' to version '${LATEST}'."
-              PR_BODY="${PR_BODY}"$'\n\n'"Previous version: '${CURRENT}'"
-
-              if git push -u origin "${BRANCH}"; then
-                if ! gh pr create \
-                  --title "${FORMULA_NAME} ${LATEST}" \
-                  --body "${PR_BODY}" \
-                  --base master \
-                  --head "${BRANCH}" \
-                  --assignee cblecker; then
-                  echo "Error: Failed to create PR for ${FORMULA_NAME}. Cleaning up remote branch."
-                  git push origin --delete "${BRANCH}" || true
-                  FAILURES=$((FAILURES + 1))
-                else
-                  echo "Successfully created PR for ${FORMULA_NAME} ${LATEST}"
-                fi
-              else
-                echo "Error: Failed to push branch ${BRANCH}"
-                FAILURES=$((FAILURES + 1))
-              fi
-            else
-              echo "Error: Failed to bump ${FORMULA_NAME}"
-              FAILURES=$((FAILURES + 1))
-            fi
-
-            # Return to master for next iteration
-            if ! git checkout master; then
-              echo "FATAL: Could not return to master branch. Aborting." >&2
-              exit 1
-            fi
-            # Clean up local branch
-            git branch -D "${BRANCH}" 2>/dev/null || true
+            MATRIX=$(echo "${MATRIX}" | jq -c \
+              --arg f "${FORMULA_NAME}" \
+              --arg c "${CURRENT}" \
+              --arg l "${LATEST}" \
+              --arg t "${NEW_TAG}" \
+              --arg b "${BRANCH}" \
+              '. + [{"formula": $f, "current": $c, "latest": $l, "tag": $t, "branch": $b}]')
           done < <(echo "${LIVECHECK_JSON}" | jq -c '.[]')
 
-          if [[ "${FAILURES}" -gt 0 ]]; then
-            echo "Error: ${FAILURES} formula(s) failed to bump." >&2
-            exit 1
-          fi
+          echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
+          echo "Found $(echo "${MATRIX}" | jq 'length') formula(s) to bump."
+
+  bump:
+    needs: detect
+    if: needs.detect.outputs.matrix != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.detect.outputs.matrix) }}
+    steps:
+      - name: Generate App Token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.AUTOMATION_APP_ID }}
+          private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Bump formula
+        run: ./scripts/bump-formula.sh "${{ matrix.formula }}" "${{ matrix.tag }}"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          branch: ${{ matrix.branch }}
+          delete-branch: true
+          title: "${{ matrix.formula }} ${{ matrix.latest }}"
+          body: |
+            Automated bump of '${{ matrix.formula }}' to version '${{ matrix.latest }}'.
+
+            Previous version: '${{ matrix.current }}'
+          assignees: cblecker
+          commit-message: "${{ matrix.formula }} ${{ matrix.latest }}"
