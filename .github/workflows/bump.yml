@@ -1,7 +1,7 @@
 name: Bump Formulas
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "7,37 * * * *"
   workflow_dispatch:
 permissions:
   contents: read
