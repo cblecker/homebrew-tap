@@ -59,6 +59,14 @@ jobs:
             brew test-bot --only-formulae --junit --only-json-tab --skip-dependents --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
           fi
 
+      - name: Check for formula failures
+        run: |
+          if compgen -G "failed/*.json" > /dev/null 2>&1; then
+            echo "::error::Formula test failures detected:"
+            ls -la failed/
+            exit 1
+          fi
+
       - name: Run brew test-bot --only-formulae-dependents --junit --skipped-or-failed-formulae=${{ steps.brew-test-bot-formulae.outputs.skipped_or_failed_formulae }}
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
@@ -73,16 +81,27 @@ jobs:
           fi
 
       - name: Output brew test-bot failures
-        if: matrix.os == 'macos-latest'
+        if: always() && matrix.os == 'macos-latest'
         run: |
-          cat steps_output.txt
-          rm steps_output.txt
+          if [ -f steps_output.txt ]; then
+            echo "### Test output" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' steps_output.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            rm steps_output.txt
+          fi
 
       - name: Output brew bottle output
-        if: matrix.os == 'macos-latest'
+        if: always() && matrix.os == 'macos-latest'
         run: |
-          cat bottle_output.txt
-          rm bottle_output.txt
+          if [ -f bottle_output.txt ]; then
+            echo "<details><summary>Bottle output</summary>" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' bottle_output.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "</details>" >> "$GITHUB_STEP_SUMMARY"
+            rm bottle_output.txt
+          fi
 
       - name: Run brew test-bot --only-cleanup-after
         run: |
@@ -116,3 +135,21 @@ jobs:
         run: |
           docker stop brewtestbot
           docker rm brewtestbot
+
+  conclusion:
+    needs: tests
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check test results
+        env:
+          TESTS_RESULT: ${{ needs.tests.result }}
+        run: |
+          result="${TESTS_RESULT}"
+          printf '::notice ::tests job status: %s\n' "$result"
+
+          if [[ "$result" = "failure" ]] || [[ "$result" = "cancelled" ]]
+          then
+            printf '::error ::tests job %s.\n' "$result"
+            exit 1
+          fi
