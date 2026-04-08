@@ -36,6 +36,6 @@ class Osdctl < Formula
 
     # Test that completions were generated
     assert_match "complete -o default -F __start_osdctl osdctl", (bash_completion/"osdctl").read
-    assert_match "__osdctl_bash_source <(__osdctl_convert_bash_to_zsh)", (zsh_completion/"_osdctl").read
+    assert_match "compdef _osdctl osdctl", (zsh_completion/"_osdctl").read
   end
 end
