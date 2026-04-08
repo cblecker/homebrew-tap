@@ -84,10 +84,12 @@ jobs:
         if: always() && matrix.os == 'macos-latest'
         run: |
           if [ -f steps_output.txt ]; then
-            echo "### Test output" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' steps_output.txt >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            {
+              echo "### Test output"
+              echo '```'
+              sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' steps_output.txt
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
             rm steps_output.txt
           fi
 
@@ -95,11 +97,13 @@ jobs:
         if: always() && matrix.os == 'macos-latest'
         run: |
           if [ -f bottle_output.txt ]; then
-            echo "<details><summary>Bottle output</summary>" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' bottle_output.txt >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            echo "</details>" >> "$GITHUB_STEP_SUMMARY"
+            {
+              echo "<details><summary>Bottle output</summary>"
+              echo '```'
+              sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' bottle_output.txt
+              echo '```'
+              echo "</details>"
+            } >> "$GITHUB_STEP_SUMMARY"
             rm bottle_output.txt
           fi
 
