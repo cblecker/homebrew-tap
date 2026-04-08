@@ -7,14 +7,16 @@ on:
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     env:
       HOMEBREW_DEVELOPER: 1
       HOMEBREW_NO_INSTALL_FROM_API: 1
     strategy:
       matrix:
-        os:
-        - ubuntu-latest
-        - macos-latest
+        include:
+          - os: ubuntu-latest
+            container: homebrew/ubuntu22.04:master
+          - os: macos-latest
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
 
@@ -25,16 +27,6 @@ jobs:
       - run: brew style cblecker/tap --except-cops Layout/LineLength
 
       - run: brew audit --tap cblecker/tap --skip-style --except specs
-
-      - name: Start Docker container
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          docker create \
-            -e GITHUB_ACTIONS -e GITHUB_BASE_REF -e GITHUB_OUTPUT -e GITHUB_REF -e GITHUB_REPOSITORY -e GITHUB_SHA \
-            -v "$GITHUB_OUTPUT:$GITHUB_OUTPUT" --name=brewtestbot homebrew/ubuntu22.04:master sleep infinity
-          docker start brewtestbot
-          docker exec brewtestbot \
-            sudo setfacl -Rm "d:u:linuxbrew:rwX,u:linuxbrew:rwX" "$RUNNER_TEMP"
 
       - name: Install JQ
         if: matrix.os == 'macos-latest'
@@ -51,13 +43,7 @@ jobs:
 
       - name: Run brew test-bot --only-formulae --junit --only-json-tab --skip-dependents --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
         id: brew-test-bot-formulae
-        run: |
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            docker exec brewtestbot \
-              brew test-bot --only-formulae --junit --only-json-tab --skip-dependents --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
-          else
-            brew test-bot --only-formulae --junit --only-json-tab --skip-dependents --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
-          fi
+        run: brew test-bot --only-formulae --junit --only-json-tab --skip-dependents --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
 
       - name: Check for formula failures
         run: |
@@ -69,19 +55,12 @@ jobs:
 
       - name: Run brew test-bot --only-formulae-dependents --junit --skipped-or-failed-formulae=${{ steps.brew-test-bot-formulae.outputs.skipped_or_failed_formulae }}
         run: |
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            docker exec brewtestbot \
-              brew test-bot --only-formulae-dependents --junit \
-                            --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }} \
-                            --skipped-or-failed-formulae=${{ steps.brew-test-bot-formulae.outputs.skipped_or_failed_formulae }}
-          else
-            brew test-bot --only-formulae-dependents --junit \
-                          --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }} \
-                          --skipped-or-failed-formulae=${{ steps.brew-test-bot-formulae.outputs.skipped_or_failed_formulae }}
-          fi
+          brew test-bot --only-formulae-dependents --junit \
+                        --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }} \
+                        --skipped-or-failed-formulae=${{ steps.brew-test-bot-formulae.outputs.skipped_or_failed_formulae }}
 
       - name: Output brew test-bot failures
-        if: always() && matrix.os == 'macos-latest'
+        if: always()
         run: |
           if [ -f steps_output.txt ]; then
             {
@@ -94,7 +73,7 @@ jobs:
           fi
 
       - name: Output brew bottle output
-        if: always() && matrix.os == 'macos-latest'
+        if: always()
         run: |
           if [ -f bottle_output.txt ]; then
             {
@@ -108,37 +87,13 @@ jobs:
           fi
 
       - name: Run brew test-bot --only-cleanup-after
-        run: |
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            docker exec brewtestbot \
-              brew test-bot --only-cleanup-after
-          else
-            brew test-bot --only-cleanup-after
-          fi
+        run: brew test-bot --only-cleanup-after
 
       - name: Run brew test-bot --only-setup --dry-run
-        run: |
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            docker exec brewtestbot \
-              brew test-bot --only-setup --dry-run
-          else
-            brew test-bot --only-setup --dry-run
-          fi
+        run: brew test-bot --only-setup --dry-run
 
       - name: Run brew test-bot --only-formulae --dry-run
-        run: |
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            docker exec brewtestbot \
-              brew test-bot --only-formulae --dry-run --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
-          else
-            brew test-bot --only-formulae --dry-run --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
-          fi
-
-      - name: Cleanup Docker container
-        if: always() && matrix.os == 'ubuntu-latest'
-        run: |
-          docker stop brewtestbot
-          docker rm brewtestbot
+        run: brew test-bot --only-formulae --dry-run --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
 
   conclusion:
     needs: tests
