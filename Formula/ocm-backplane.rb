@@ -4,14 +4,25 @@ class OcmBackplane < Formula
   url "https://github.com/openshift/backplane-cli.git",
       tag:      "v0.8.0",
       revision: "849d479a7a1bcb32ae4d2d1289c5afa35a153141"
+  revision 1
   head "https://github.com/openshift/backplane-cli.git", branch: "main"
 
   depends_on "go" => :build
   depends_on "goreleaser" => :build
 
+  resource "mockgen" do
+    url "https://github.com/uber-go/mock/archive/refs/tags/v0.6.0.tar.gz"
+    sha256 "e315da02f11069f4e9688054cf8dba86535318ea28ab7a2fe144c5e6a859e329"
+  end
+
   def install
     # Don't dirty the git tree
     (buildpath/".git/info/exclude").append_lines ".brew_home"
+
+    resource("mockgen").stage do
+      system "go", "build", *std_go_args(output: buildpath/"bootstrap/mockgen"), "./mockgen"
+    end
+    ENV.prepend_path "PATH", buildpath/"bootstrap"
 
     # Create bin directory, as goreleaser doesn't do this
     mkdir bin
