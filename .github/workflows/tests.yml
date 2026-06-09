@@ -24,7 +24,7 @@ jobs:
             container: ghcr.io/homebrew/ubuntu24.04:main
           - os: macos-latest
     steps:
-      - uses: Homebrew/actions/setup-homebrew@master
+      - uses: Homebrew/actions/setup-homebrew@main
 
       - run: brew test-bot --only-cleanup-before
 
