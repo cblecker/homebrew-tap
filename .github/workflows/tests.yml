@@ -21,7 +21,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            container: homebrew/ubuntu22.04:master
+            container: ghcr.io/homebrew/ubuntu24.04:main
           - os: macos-latest
     steps:
       - uses: Homebrew/actions/setup-homebrew@master
