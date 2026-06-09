@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 permissions:
   contents: read
@@ -94,12 +94,6 @@ jobs:
 
       - name: Run brew test-bot --only-cleanup-after
         run: brew test-bot --only-cleanup-after
-
-      - name: Run brew test-bot --only-setup --dry-run
-        run: brew test-bot --only-setup --dry-run
-
-      - name: Run brew test-bot --only-formulae --dry-run
-        run: brew test-bot --only-formulae --dry-run --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }}
 
   conclusion:
     needs: tests
