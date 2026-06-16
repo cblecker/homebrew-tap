@@ -2,8 +2,8 @@ class ClaudeCompletion < Formula
   desc "Bash completion for Claude Code CLI"
   homepage "https://github.com/cblecker/claude-completion"
   url "https://github.com/cblecker/claude-completion.git",
-      tag:      "v2.1.177",
-      revision: "581820c89077e9a459079b2d82cfb95b1a23ec87"
+      tag:      "v2.1.178",
+      revision: "273271762d7a5fb3211cdc8634fcbc8ef0fad7c3"
   head "https://github.com/cblecker/claude-completion.git", branch: "main"
 
   depends_on "bash-completion@2"
