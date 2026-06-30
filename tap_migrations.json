@@ -1,7 +1,9 @@
 {
   "crc": "homebrew/core",
   "kind": "homebrew/core",
-  "rosa": "homebrew/core/rosa-cli",
   "ocm": "homebrew/core",
-  "openshift-cli": "homebrew/core"
+  "ocm-backplane": "openshift-online/sre-tools/backplane-cli",
+  "openshift-cli": "homebrew/core",
+  "osdctl": "openshift-online/sre-tools",
+  "rosa": "homebrew/core/rosa-cli"
 }
