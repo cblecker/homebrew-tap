@@ -16,7 +16,6 @@ This is a Homebrew tap containing utility formulas for various tools and utiliti
 ### Development
 - Formula files are located in `Formula/` directory
 - Each formula follows Homebrew Ruby DSL conventions
-- Most formulas use Go + GoReleaser for building
 
 ## Architecture
 
@@ -28,8 +27,9 @@ This is a Homebrew tap containing utility formulas for various tools and utiliti
 
 ### Key Files
 - `tap_migrations.json`: Maps old formula names to homebrew-core locations
-- `formula_renames.json`: Currently empty, for future renames
 - `test_exemptions.jq`: JQ script excluding specific formulas from CI testing
+- `scripts/bump-formula.sh`: Updates formula tag/revision fields for version bumps
+- `.github/workflows/bump.yml`: Automated version bumping (runs every 30 minutes, creates PRs)
 - `.github/workflows/tests.yml`: CI pipeline using brew test-bot
 
 ### CI Pipeline
@@ -46,18 +46,3 @@ The GitHub Actions workflow:
 - Build with goreleaser: `system "goreleaser", "build", *args, "--output=#{bin}/tool-name"`
 - Generate completions: `generate_completions_from_executable()`
 - Include git tree protection: `(buildpath/".git/info/exclude").append_lines ".brew_home"`
-
-## Slash Commands
-
-### `/bump [formula-name]`
-
-Bump Homebrew formula versions to their latest releases.
-
-- `/bump` - Bump all formulas that need updating (automatically detected via `brew livecheck`)
-- `/bump <formula-name>` - Bump a specific formula to its latest version
-
-The command automatically:
-1. Finds the latest version from GitHub releases or git tags
-2. Gets the correct commit SHA for the tag
-3. Updates the formula's `tag:` and `revision:` fields
-4. Creates properly formatted commits on the main branch
