@@ -99,6 +99,7 @@ jobs:
         run: ./scripts/bump-formula.sh "${{ matrix.formula }}" "${{ matrix.tag }}"
 
       - name: Create Pull Request
+        id: create-pr
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ steps.app-token.outputs.token }}
@@ -109,5 +110,11 @@ jobs:
             Automated bump of '${{ matrix.formula }}' to version '${{ matrix.latest }}'.
 
             Previous version: '${{ matrix.current }}'
-          assignees: cblecker
           commit-message: "${{ matrix.formula }} ${{ matrix.latest }}"
+
+      - name: Enable auto-merge
+        if: steps.create-pr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
+        run: gh pr merge --auto --squash "$PR_NUMBER" --repo "${{ github.repository }}"
