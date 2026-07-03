@@ -2,6 +2,8 @@ name: Bump Formulas
 on:
   schedule:
     - cron: "7,37 * * * *"
+  repository_dispatch:
+    types: [formula-update]
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,7 +12,73 @@ concurrency:
   group: bump-formulas
   cancel-in-progress: false
 jobs:
+  dispatch-bump:
+    if: github.event_name == 'repository_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate dispatch payload
+        id: validate
+        env:
+          FORMULA: ${{ github.event.client_payload.formula }}
+          TAG: ${{ github.event.client_payload.tag }}
+        run: |
+          if [ -z "${FORMULA}" ] || [ -z "${TAG}" ]; then
+            echo "::error::Missing required dispatch payload fields (formula, tag)"
+            exit 1
+          fi
+          if [[ ! "${FORMULA}" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+            echo "::error::Invalid formula name '${FORMULA}'"
+            exit 1
+          fi
+          if [[ ! "${TAG}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+([._-].*)?$ ]]; then
+            echo "::error::Invalid tag format '${TAG}'"
+            exit 1
+          fi
+          VERSION="${TAG#v}"
+          {
+            echo "formula=${FORMULA}"
+            echo "tag=${TAG}"
+            echo "version=${VERSION}"
+            echo "branch=bump/${FORMULA}-${VERSION}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Check for existing PR
+        id: pr-check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ steps.validate.outputs.branch }}
+        run: |
+          EXISTING_PR=$(gh pr list --repo "${GH_REPO}" --head "${BRANCH}" --state open --json number --jq 'length')
+          if [ "${EXISTING_PR}" -gt 0 ]; then
+            echo "::notice::PR already exists for branch ${BRANCH}"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump and create PR
+        if: steps.pr-check.outputs.exists != 'true'
+        uses: ./.github/actions/bump-and-pr
+        with:
+          formula: ${{ steps.validate.outputs.formula }}
+          tag: ${{ steps.validate.outputs.tag }}
+          version: ${{ steps.validate.outputs.version }}
+          branch: ${{ steps.validate.outputs.branch }}
+          body: |
+            Automated bump of '${{ steps.validate.outputs.formula }}' to version '${{ steps.validate.outputs.version }}'.
+
+            Triggered by repository_dispatch from cblecker/claude-completion.
+          app-id: ${{ secrets.AUTOMATION_APP_ID }}
+          app-private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
+
   detect:
+    if: github.event_name != 'repository_dispatch'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -83,38 +151,21 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.detect.outputs.matrix) }}
     steps:
-      - name: Generate App Token
-        id: app-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          client-id: ${{ secrets.AUTOMATION_APP_ID }}
-          private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
-
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
-      - name: Bump formula
-        run: ./scripts/bump-formula.sh "${{ matrix.formula }}" "${{ matrix.tag }}"
-
-      - name: Create Pull Request
-        id: create-pr
-        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+      - name: Bump and create PR
+        uses: ./.github/actions/bump-and-pr
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          formula: ${{ matrix.formula }}
+          tag: ${{ matrix.tag }}
+          version: ${{ matrix.latest }}
           branch: ${{ matrix.branch }}
-          delete-branch: true
-          title: "${{ matrix.formula }} ${{ matrix.latest }}"
           body: |
             Automated bump of '${{ matrix.formula }}' to version '${{ matrix.latest }}'.
 
             Previous version: '${{ matrix.current }}'
-          commit-message: "${{ matrix.formula }} ${{ matrix.latest }}"
-
-      - name: Enable auto-merge
-        if: steps.create-pr.outputs.pull-request-number
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
-        run: gh pr merge --auto --squash "$PR_NUMBER" --repo "${{ github.repository }}"
+          app-id: ${{ secrets.AUTOMATION_APP_ID }}
+          app-private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}

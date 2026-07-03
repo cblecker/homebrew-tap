@@ -1,0 +1,62 @@
+name: Bump and PR
+description: Bumps a formula version and creates an auto-merge PR
+
+inputs:
+  formula:
+    description: Formula name
+    required: true
+  tag:
+    description: Git tag (e.g. v1.2.3)
+    required: true
+  version:
+    description: Version string for PR title/body
+    required: true
+  branch:
+    description: PR branch name
+    required: true
+  body:
+    description: PR body text
+    required: true
+  app-id:
+    description: GitHub App client ID
+    required: true
+  app-private-key:
+    description: GitHub App private key
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Generate App Token
+      id: app-token
+      uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+      with:
+        client-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.app-private-key }}
+
+    - name: Bump formula
+      shell: bash
+      env:
+        FORMULA: ${{ inputs.formula }}
+        TAG: ${{ inputs.tag }}
+      run: ./scripts/bump-formula.sh "${FORMULA}" "${TAG}"
+
+    - name: Create Pull Request
+      id: create-pr
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+      with:
+        token: ${{ steps.app-token.outputs.token }}
+        branch: ${{ inputs.branch }}
+        delete-branch: true
+        title: "${{ inputs.formula }} ${{ inputs.version }}"
+        body: ${{ inputs.body }}
+        commit-message: "${{ inputs.formula }} ${{ inputs.version }}"
+
+    - name: Enable auto-merge
+      if: steps.create-pr.outputs.pull-request-number
+      shell: bash
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
+        GH_REPO: ${{ github.repository }}
+      run: gh pr merge --auto --squash "$PR_NUMBER" --repo "${GH_REPO}"
