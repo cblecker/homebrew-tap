@@ -2,8 +2,8 @@ class VpnKinit < Formula
   desc "Run kinit automatically when the NetBird VPN tunnel comes up"
   homepage "https://github.com/cblecker/vpn-kinit/"
   url "https://github.com/cblecker/vpn-kinit.git",
-      tag:      "v0.1.0",
-      revision: "c50f5d5359a34868f9b8520ce82046e20c9c4405"
+      tag:      "v0.2.0",
+      revision: "f563552587eba748880141d28a38aa1cd8247048"
   license "MIT"
   head "https://github.com/cblecker/vpn-kinit.git", branch: "main"
 
