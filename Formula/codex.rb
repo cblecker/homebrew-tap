@@ -51,7 +51,6 @@ class Codex < Formula
 
     # --root=libexec puts our build back at libexec/bin/codex; --bin skips logs_client.
     system "cargo", "install", "--bin", "codex", *std_cargo_args(root: libexec, path: "codex-rs/cli")
-    rm_f [libexec/".crates.toml", libexec/".crates2.json"]
 
     # codex-package.json is what BuildInfo reads for the reported version.
     manifest = JSON.parse((libexec/"codex-package.json").read)
