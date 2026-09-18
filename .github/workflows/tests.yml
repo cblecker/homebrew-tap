@@ -58,6 +58,15 @@ jobs:
             ls -la failed/
             exit 1
           fi
+          # This tap ships no bottles, so test-bot marks every build/test step
+          # ignore_failures (!bottled_on_current_version) and still exits 0 when
+          # `brew install` fails. A step is only reported as ignored if it did
+          # fail, so this cannot fire on a benign skip.
+          if [ -f steps_output.txt ] && grep -qE "failed steps? ignored!" steps_output.txt; then
+            echo "::error::brew test-bot ignored a failed step:"
+            cat steps_output.txt
+            exit 1
+          fi
 
       - name: Run brew test-bot --only-formulae-dependents --junit --skipped-or-failed-formulae=${{ steps.brew-test-bot-formulae.outputs.skipped_or_failed_formulae }}
         run: |
