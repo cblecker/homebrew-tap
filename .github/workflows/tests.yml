@@ -74,6 +74,17 @@ jobs:
                         --testing-formulae=${{ steps.formulae-detect.outputs.testing_formulae }} \
                         --skipped-or-failed-formulae=${{ steps.brew-test-bot-formulae.outputs.skipped_or_failed_formulae }}
 
+      # Each test-bot invocation rewrites steps_output.txt, so the check above
+      # only covers the formulae run. Dependents built from this tap are also
+      # unbottled, so their failures are ignored the same way.
+      - name: Check for dependent failures
+        run: |
+          if [ -f steps_output.txt ] && grep -qE "failed steps? ignored!" steps_output.txt; then
+            echo "::error::brew test-bot ignored a failed dependent step:"
+            cat steps_output.txt
+            exit 1
+          fi
+
       - name: Output brew test-bot failures
         if: always()
         run: |
