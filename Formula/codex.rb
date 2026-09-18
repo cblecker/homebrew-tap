@@ -13,9 +13,6 @@ class Codex < Formula
 
   on_linux do
     depends_on "pkgconf" => :build
-    # Link Homebrew's terminfo rather than the system /lib/*/libtinfo.so.6,
-    # which `brew linkage --test` rejects as an unwanted system library.
-    depends_on "ncurses"
     depends_on "openssl@3"
   end
 
@@ -66,6 +63,11 @@ class Codex < Formula
 
     # --root=libexec puts our build back at libexec/bin/codex; --bin skips logs_client.
     system "cargo", "install", "--bin", "codex", *std_cargo_args(root: libexec, path: "codex-rs/cli")
+
+    # Upstream's Linux zsh links the system libtinfo, which `brew linkage` rejects
+    # as an unwanted system library. Dropping it makes bundled_zsh_path return None
+    # and codex falls back to the system zsh; homebrew-core's codex-acp does the same.
+    rm libexec/"codex-resources/zsh/bin/zsh" if OS.linux?
 
     # codex-package.json is what BuildInfo reads for the reported version.
     manifest = JSON.parse((libexec/"codex-package.json").read)
