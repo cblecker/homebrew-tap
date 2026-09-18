@@ -13,6 +13,9 @@ class Codex < Formula
 
   on_linux do
     depends_on "pkgconf" => :build
+    # Link Homebrew's terminfo rather than the system /lib/*/libtinfo.so.6,
+    # which `brew linkage --test` rejects as an unwanted system library.
+    depends_on "ncurses"
     depends_on "openssl@3"
   end
 
@@ -74,7 +77,10 @@ class Codex < Formula
   end
 
   test do
-    assert_match stable.version.to_s, shell_output("#{bin}/codex --version")
+    # Upstream's clap version is CARGO_PKG_VERSION, which is 0.0.0 for any build
+    # from source; the packaged version lives in the manifest BuildInfo reads.
+    assert_match "codex-cli", shell_output("#{bin}/codex --version")
+    assert_match stable.version.to_s, (libexec/"codex-package.json").read
     assert_path_exists libexec/"bin/codex-code-mode-host"
     assert_path_exists libexec/"codex-path/rg"
     assert_path_exists zsh_completion/"_codex"
