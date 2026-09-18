@@ -54,6 +54,13 @@ class Codex < Formula
     end
     rm libexec/"bin/codex"
 
+    # Homebrew's rust is 1.98, but codex-rs/rust-toolchain.toml pins 1.95 and only
+    # rustup honors it. 1.98 overflows the query depth limit computing the layout of
+    # codex-chatgpt's connectors::list_connectors, and -Zcrate-attr is nightly-only.
+    inreplace "codex-rs/chatgpt/src/lib.rs",
+              /\A/,
+              "#![recursion_limit = \"512\"]\n"
+
     # --root=libexec puts our build back at libexec/bin/codex; --bin skips logs_client.
     system "cargo", "install", "--bin", "codex", *std_cargo_args(root: libexec, path: "codex-rs/cli")
 
