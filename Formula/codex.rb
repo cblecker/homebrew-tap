@@ -11,6 +11,11 @@ class Codex < Formula
   depends_on "cmake" => :build
   depends_on "rust" => :build
 
+  on_linux do
+    depends_on "pkgconf" => :build
+    depends_on "openssl@3"
+  end
+
   # Upstream's packaged release supplies codex-code-mode-host, codex-path/rg and
   # codex-resources/zsh; only bin/codex is rebuilt from the fork.
   resource "codex-package" do
@@ -54,7 +59,7 @@ class Codex < Formula
 
     # codex-package.json is what BuildInfo reads for the reported version.
     manifest = JSON.parse((libexec/"codex-package.json").read)
-    manifest["version"] = version.to_s
+    manifest["version"] = stable.version.to_s
     (libexec/"codex-package.json").atomic_write("#{JSON.pretty_generate(manifest)}\n")
 
     bin.install_symlink libexec/"bin/codex"
@@ -62,7 +67,7 @@ class Codex < Formula
   end
 
   test do
-    assert_match version.to_s, shell_output("#{bin}/codex --version")
+    assert_match stable.version.to_s, shell_output("#{bin}/codex --version")
     assert_path_exists libexec/"bin/codex-code-mode-host"
     assert_path_exists libexec/"codex-path/rg"
     assert_path_exists zsh_completion/"_codex"
