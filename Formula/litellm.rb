@@ -19,11 +19,20 @@ class Litellm < Formula
     # Don't dirty the git tree
     (buildpath/".git/info/exclude").append_lines ".brew_home"
 
+    # PyPI's Rust wheels for these four are linked without enough Mach-O header
+    # padding for Homebrew to rewrite their dylib IDs to the keg path, so the
+    # install fails linkage fixup. Building them here picks up the headerpad.
+    no_binary = []
+    if OS.mac?
+      ENV["RUSTFLAGS"] = "-C link-arg=-Wl,-headerpad_max_install_names"
+      no_binary = %w[jiter orjson rpds-py tiktoken].flat_map { |pkg| ["--no-binary-package", pkg] }
+    end
+
     # --no-editable, or the install links back into the build directory.
     ENV["UV_PROJECT_ENVIRONMENT"] = libexec.to_s
     ENV["UV_PYTHON_DOWNLOADS"] = "never"
     system "uv", "sync", "--frozen", "--no-dev", "--extra", "proxy",
-           "--no-editable",
+           "--no-editable", *no_binary,
            "--python", formula_opt_bin("python@3.14")/"python3.14"
 
     bin.install_symlink libexec/"bin/litellm"
