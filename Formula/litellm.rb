@@ -2,14 +2,17 @@ class Litellm < Formula
   desc "Unified Anthropic/OpenAI-compatible LLM gateway"
   homepage "https://github.com/BerriAI/litellm"
   url "https://github.com/BerriAI/litellm.git",
-      tag:      "v1.102.0",
-      revision: "95293834e833b2d2979f87d1bd2a5be45db6728a"
+      tag:      "v1.101.0",
+      revision: "18243cd7af4c3325165ba68b21379e2719e051c7"
   license "MIT"
 
   livecheck do
+    # Upstream tags ahead of publishing, so the default Git strategy offers
+    # unreleased tags: v1.102.0 is tagged but has no release, while
+    # /releases/latest is still v1.101.0. Checking the latest release also
+    # skips the -rc.N and -dev.N prereleases, which are marked as such.
     url :stable
-    # Anchored so the -rc.N, -dev.N, -stable and -nightly tags are skipped.
-    regex(/^v?(\d+(?:\.\d+)+)$/i)
+    strategy :github_latest
   end
 
   depends_on "rust" => :build
