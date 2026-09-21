@@ -33,7 +33,7 @@ class Litellm < Formula
     ENV["UV_PYTHON_DOWNLOADS"] = "never"
     system "uv", "sync", "--frozen", "--no-dev", "--extra", "proxy",
            "--no-editable",
-           "--python", Formula["python@3.14"].opt_bin/"python3.14"
+           "--python", formula_opt_bin("python@3.14")/"python3.14"
 
     bin.install_symlink libexec/"bin/litellm"
   end
