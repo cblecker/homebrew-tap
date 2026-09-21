@@ -12,42 +12,28 @@ class Litellm < Formula
     regex(/^v?(\d+(?:\.\d+)+)$/i)
   end
 
-  depends_on "maturin" => :build
   depends_on "rust" => :build
   depends_on "uv" => :build
-  depends_on "python@3.13"
+  depends_on "python@3.14"
 
   def install
     # Don't dirty the git tree
     (buildpath/".git/info/exclude").append_lines ".brew_home"
 
-    python = libexec/"bin/python"
-    system Formula["python@3.13"].opt_bin/"python3.13", "-m", "venv", libexec
-
-    # Hash-verified third-party deps straight from the tag's uv.lock, so a
-    # version bump advances the source and its pinned dependencies together.
-    # --frozen trusts the lock as-is; --no-emit-project/-workspace drop the
-    # three in-tree path entries, which carry no hashes.
-    system "uv", "export", "--frozen", "--no-dev", "--extra", "proxy",
-           "--no-emit-project", "--no-emit-workspace",
-           "--format", "requirements-txt", "-o", "reqs.txt"
-    system "uv", "pip", "install", "--python", python,
-           "--require-hashes", "-r", "reqs.txt"
-
-    # PEP 517 backends for the in-tree packages, so --no-build-isolation below
-    # never resolves an unpinned backend at build time. uv passes PYTHONPATH
-    # through to the backend, which picks up the `maturin` module Homebrew
-    # installs alongside its binary; uv_build has no formula, so pin it to what
-    # the two workspace members' pyproject.toml declares.
-    ENV.prepend_path "PYTHONPATH", Formula["maturin"].opt_lib/"python3.13/site-packages"
-    system "uv", "pip", "install", "--python", python, "uv-build==0.11.8"
-
-    # The in-tree packages: the [tool.uv.workspace] members, then the root
-    # project. --no-deps because the lockfile install above already covers them.
-    ["./litellm-proxy-extras", "./enterprise", "."].each do |pkg|
-      system "uv", "pip", "install", "--python", python,
-             "--no-deps", "--no-build-isolation", pkg
-    end
+    # Install the tag's own uv.lock. One command covers the hash-verified
+    # third-party deps, the two [tool.uv.workspace] members and the root
+    # project, so bumping tag:/revision: advances the source and its pinned
+    # dependencies together -- no hand-maintained resource blocks.
+    #
+    # --frozen uses the lock as-is rather than re-resolving; --no-editable gets
+    # a real site-packages install instead of a link back into the build dir;
+    # the pinned PEP 517 backends (maturin==1.15.0, uv_build==0.11.8) come from
+    # each pyproject.toml's build-system.requires, in isolated build envs.
+    ENV["UV_PROJECT_ENVIRONMENT"] = libexec.to_s
+    ENV["UV_PYTHON_DOWNLOADS"] = "never"
+    system "uv", "sync", "--frozen", "--no-dev", "--extra", "proxy",
+           "--no-editable",
+           "--python", Formula["python@3.14"].opt_bin/"python3.14"
 
     bin.install_symlink libexec/"bin/litellm"
   end
