@@ -42,7 +42,7 @@ class Litellm < Formula
     # psycopg-c is not in uv.lock and must match the locked psycopg version exactly.
     psycopg_version = Utils.safe_popen_read(libexec/"bin/python", "-c",
                                             "import importlib.metadata as m; print(m.version('psycopg'))").chomp
-    ENV.prepend_path "PATH", Formula["libpq"].opt_bin
+    ENV.prepend_path "PATH", formula_opt_bin("libpq")
     system "uv", "pip", "install", "--python", libexec/"bin/python", "--no-deps",
            "--no-binary", "psycopg-c", "psycopg-c==#{psycopg_version}"
 
