@@ -95,6 +95,7 @@ jobs:
         id: set-matrix
         env:
           GH_TOKEN: ${{ github.token }}
+          MIN_RELEASE_AGE_HOURS: 72
         run: |
           echo "Running brew livecheck..."
           LIVECHECK_JSON=$(brew livecheck --tap=cblecker/tap --newer-only --quiet --json | jq -c '.')
@@ -119,6 +120,24 @@ jobs:
               NEW_TAG="v${LATEST}"
             else
               NEW_TAG="${LATEST}"
+            fi
+
+            # Hold third-party releases until they are MIN_RELEASE_AGE_HOURS old,
+            # so a compromised release has time to be caught and pulled upstream
+            REPO_URL=$(grep -E '^\s+url\s+"' "Formula/${FORMULA_NAME}.rb" | head -1 | sed -e 's/.*url.*"\(.*\)".*/\1/' -e 's/\.git$//')
+            if [[ "${REPO_URL}" =~ ^https://github\.com/([^/]+/[^/]+)$ && "${REPO_URL}" != https://github.com/cblecker/* ]]; then
+              OWNER_REPO="${BASH_REMATCH[1]}"
+              # On failure gh api prints the error body to stdout, so only trust output on success
+              if ! PUBLISHED=$(gh api "repos/${OWNER_REPO}/releases/tags/${NEW_TAG}" --jq '.published_at // empty' 2>/dev/null) \
+                || [[ -z "${PUBLISHED}" ]]; then
+                echo "Skipping ${FORMULA_NAME} ${NEW_TAG}: no GitHub release to date the cooldown from"
+                continue
+              fi
+              AGE_HOURS=$(( ($(date +%s) - $(date -d "${PUBLISHED}" +%s)) / 3600 ))
+              if [[ "${AGE_HOURS}" -lt "${MIN_RELEASE_AGE_HOURS}" ]]; then
+                echo "Skipping ${FORMULA_NAME} ${NEW_TAG}: published ${AGE_HOURS}h ago, waiting for ${MIN_RELEASE_AGE_HOURS}h"
+                continue
+              fi
             fi
 
             BRANCH="bump/${FORMULA_NAME}-${LATEST}"
