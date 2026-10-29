@@ -35,11 +35,31 @@ runs:
         private-key: ${{ inputs.app-private-key }}
 
     - name: Bump formula
+      id: bump
       shell: bash
       env:
         FORMULA: ${{ inputs.formula }}
         TAG: ${{ inputs.tag }}
-      run: ./scripts/bump-formula.sh "${FORMULA}" "${TAG}"
+      run: |
+        field() { grep "${1}:" "Formula/${FORMULA}.rb" | head -1 | sed 's/.*'"${1}"': *"\(.*\)".*/\1/'; }
+        echo "old-tag=$(field tag)" >> "$GITHUB_OUTPUT"
+        echo "old-revision=$(field revision)" >> "$GITHUB_OUTPUT"
+        ./scripts/bump-formula.sh "${FORMULA}" "${TAG}"
+        echo "new-revision=$(field revision)" >> "$GITHUB_OUTPUT"
+
+    - name: Write PR body
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        FORMULA: ${{ inputs.formula }}
+        TAG: ${{ inputs.tag }}
+        BODY: ${{ inputs.body }}
+        OLD_TAG: ${{ steps.bump.outputs.old-tag }}
+        OLD_REV: ${{ steps.bump.outputs.old-revision }}
+        NEW_REV: ${{ steps.bump.outputs.new-revision }}
+      run: |
+        REPORT=$(./scripts/bump-report.sh "${FORMULA}" "${OLD_TAG}" "${OLD_REV}" "${TAG}" "${NEW_REV}")
+        printf '%s\n\n%s\n' "${BODY}" "${REPORT}" > "${RUNNER_TEMP}/pr-body.md"
 
     - name: Create Pull Request
       id: create-pr
@@ -49,7 +69,7 @@ runs:
         branch: ${{ inputs.branch }}
         delete-branch: true
         title: "${{ inputs.formula }} ${{ inputs.version }}"
-        body: ${{ inputs.body }}
+        body-path: ${{ runner.temp }}/pr-body.md
         commit-message: "${{ inputs.formula }} ${{ inputs.version }}"
 
     - name: Enable auto-merge

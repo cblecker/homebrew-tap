@@ -29,7 +29,8 @@ This is a Homebrew tap containing utility formulas for various tools and utiliti
 - `tap_migrations.json`: Maps old formula names to homebrew-core locations
 - `test_exemptions.jq`: JQ script excluding specific formulas from CI testing
 - `scripts/bump-formula.sh`: Updates formula tag/revision fields for version bumps
-- `.github/workflows/bump.yml`: Automated version bumping (runs every 30 minutes, creates PRs)
+- `scripts/bump-report.sh`: Adds an upstream summary to bump PR bodies (compare link, release publisher, dependency and build file changes)
+- `.github/workflows/bump.yml`: Automated version bumping (runs every 30 minutes, creates PRs); livecheck bumps of third-party (non-`cblecker/`) upstreams wait until the GitHub release is `MIN_RELEASE_AGE_HOURS` (72) old
 - `.github/workflows/tests.yml`: CI pipeline using brew test-bot
 
 ### CI Pipeline
