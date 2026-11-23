@@ -2,8 +2,8 @@ class Litellm < Formula
   desc "Unified Anthropic/OpenAI-compatible LLM gateway"
   homepage "https://github.com/BerriAI/litellm"
   url "https://github.com/BerriAI/litellm.git",
-      tag:      "v1.109.1",
-      revision: "6c4ead4fc064d14e36b0c69d6795acc130c866bf"
+      tag:      "v1.110.2",
+      revision: "c3cafa3782642685ef10777e4c5931400c0a7176"
   license "MIT"
 
   livecheck do
